@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import {
   Menu,
@@ -22,16 +21,27 @@ import { useSubstrate, useSubstrateState } from './substrate-lib'
 
 const acctAddr = acct => (acct ? acct.address : '')
 
-function Main(props) {
+function Main() {
   const {
     setCurrentAccount,
     state: { keyring, currentAccount },
   } = useSubstrate()
-  const { api } = useSubstrateState()
+  const { api, socket } = useSubstrateState()
   const [receiveOpen, setReceiveOpen] = useState(false)
   const [receiveAddress, setReceiveAddress] = useState('')
   const [receiveStatus, setReceiveStatus] = useState('')
   const [isSendingFunds, setIsSendingFunds] = useState(false)
+  const [networkStatus, setNetworkStatus] = useState({
+    peers: 0,
+    latencyMs: null,
+    current: 0,
+    finalized: 0,
+    sync: false,
+  })
+  const [nodeInfo, setNodeInfo] = useState({
+    name: 'QSB Node',
+    chain: '',
+  })
 
   // Get the list of accounts we possess the private key for
   const keyringOptions = keyring.getPairs().map(account => ({
@@ -114,50 +124,182 @@ function Main(props) {
     }
   }
 
+  useEffect(() => {
+    if (!api?.rpc?.system?.health) {
+      return undefined
+    }
+
+    let finalizedUnsub = null
+    let mounted = true
+    const pollHealth = async () => {
+      const startedAt = Date.now()
+      try {
+        const [health, hash] = await Promise.all([
+          api.rpc.system.health(),
+          api.rpc.chain.getFinalizedHead(),
+        ])
+        const block = await api.rpc.chain.getHeader(hash)
+        if (!mounted) {
+          return
+        }
+        setNetworkStatus(prev => ({
+          ...prev,
+          peers: health.peers?.toNumber?.() ?? Number(health.peers || 0),
+          latencyMs: Date.now() - startedAt,
+          finalized: block.number?.toNumber?.() ?? 0,
+          sync: Boolean(health.isSyncing?.isTrue || health.isSyncing),
+        }))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    pollHealth()
+    const pollId = setInterval(pollHealth, 10000)
+
+    if (api.derive?.chain?.bestNumberFinalized) {
+      api.derive.chain.bestNumberFinalized(number => {
+        if (mounted) {
+          setNetworkStatus(prev => ({ ...prev, finalized: number.toNumber() }))
+        }
+      })
+        .then(unsub => {
+          finalizedUnsub = unsub
+        })
+        .catch(console.error)
+    }
+
+    return () => {
+      mounted = false
+      clearInterval(pollId)
+      if (finalizedUnsub) {
+        finalizedUnsub()
+      }
+    }
+  }, [api])
+
+  useEffect(() => {
+    if (!api?.derive?.chain?.bestNumber) {
+      return undefined
+    }
+    let unsub = null
+    api.derive.chain.bestNumber(number => {
+      setNetworkStatus(prev => ({ ...prev, current: number.toNumber() }))
+    })
+      .then(value => {
+        unsub = value
+      })
+      .catch(console.error)
+
+    return () => unsub && unsub()
+  }, [api])
+
+  useEffect(() => {
+    if (!api?.rpc?.system) {
+      return undefined
+    }
+    let mounted = true
+    const getInfo = async () => {
+      try {
+        const chain = await api.rpc.system.chain()
+        if (!mounted) {
+          return
+        }
+        setNodeInfo({
+          name: 'QSB Node',
+          chain: chain.toString(),
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    getInfo()
+    return () => {
+      mounted = false
+    }
+  }, [api])
+
+  const networkTone = networkStatus.sync
+    ? 'warning'
+    : networkStatus.latencyMs !== null && networkStatus.latencyMs > 1500
+      ? 'degraded'
+      : 'healthy'
+
   return (
     <Menu
       attached="top"
       tabular
-      style={{
-        backgroundColor: '#fff',
-        borderColor: '#fff',
-        paddingTop: '1em',
-        paddingBottom: '1em',
-      }}
+      className="app-topbar"
     >
       <Container>
-        <Menu.Menu>
-          <Image
-            src={`${process.env.PUBLIC_URL}/assets/substrate-logo.png`}
-            size="mini"
-          />
+        <Menu.Menu className="topbar-left-zone">
+          <div className="app-topbar-brand-menu">
+            <Image
+              src={`${process.env.PUBLIC_URL}/assets/substrate-logo.png`}
+              size="mini"
+              className="app-topbar-logo"
+            />
+            <div className="app-topbar-brand">
+              <span className="app-topbar-brand-title">QSB Manager</span>
+              <span className="app-topbar-brand-subtitle">DID Control Center</span>
+            </div>
+          </div>
+          <div className="node-inline-info">
+            <span className="node-inline-label">{nodeInfo.name}</span>
+            <span className="node-inline-value">{nodeInfo.chain || '-'}</span>
+            <span className="node-inline-separator">•</span>
+            <span className="node-inline-rpc" title={socket}>
+              RPC: {socket}
+            </span>
+          </div>
         </Menu.Menu>
-        <Menu.Menu position="right" style={{ alignItems: 'center' }}>
-          <CopyToClipboard text={acctAddr(currentAccount)}>
+        <Menu.Menu position="right" className="topbar-right-zone">
+          <div className={`network-status-pill ${networkTone}`}>
+            <span className="network-dot" />
+            <span>{networkStatus.sync ? 'Syncing' : 'Online'}</span>
+            <span className="network-divider">•</span>
+            <span>
+              {networkStatus.latencyMs === null
+                ? '... ms'
+                : `${networkStatus.latencyMs} ms`}
+            </span>
+            <span className="network-divider">•</span>
+            <span>C#{networkStatus.current.toLocaleString('en-US')}</span>
+            <span className="network-divider">•</span>
+            <span>F#{networkStatus.finalized.toLocaleString('en-US')}</span>
+          </div>
+
+          <div className="account-control">
             <Button
               basic
               circular
-              size="large"
+              size="small"
               icon="user"
               color={currentAccount ? 'green' : 'red'}
+              className="profile-button"
+              title={acctAddr(currentAccount)}
             />
-          </CopyToClipboard>
-          <Dropdown
-            search
-            selection
-            clearable
-            placeholder="Select an account"
-            options={keyringOptions}
-            onChange={(_, dropdown) => {
-              onChange(dropdown.value)
-            }}
-            value={acctAddr(currentAccount)}
-          />
+            <Dropdown
+              search
+              selection
+              clearable
+              className="account-dropdown"
+              placeholder="Select account"
+              options={keyringOptions}
+              onChange={(_, dropdown) => {
+                onChange(dropdown.value)
+              }}
+              value={acctAddr(currentAccount)}
+            />
+          </div>
+
           <BalanceAnnotation />
+
           <Button
             basic
             size="small"
-            style={{ marginLeft: '0.75em' }}
+            className="receive-funds-button"
             onClick={() => {
               setReceiveOpen(true)
               setReceiveStatus('')
@@ -229,7 +371,7 @@ function BalanceAnnotation(props) {
   }, [api, currentAccount])
 
   return currentAccount ? (
-    <Label pointing="left">
+    <Label pointing="left" className="balance-pill">
       <Icon name="money" color="green" />
       {accountBalance}
     </Label>

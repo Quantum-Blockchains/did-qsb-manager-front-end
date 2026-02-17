@@ -8,18 +8,17 @@ import {
   Message,
 } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
+import './styles.css'
 
 import { SubstrateContextProvider, useSubstrateState } from './substrate-lib'
 import { DeveloperConsole } from './substrate-lib/components'
 
 import AccountSelector from './AccountSelector'
-import BlockNumber from './BlockNumber'
 import DidDataStorage from './DidDataStorage'
-import Metadata from './Metadata'
-import NodeInfo from './NodeInfo'
 
 function Main() {
   const { apiState, apiError, keyringState } = useSubstrateState()
+  const contextRef = createRef()
 
   const loader = text => (
     <Dimmer active>
@@ -50,21 +49,13 @@ function Main() {
     )
   }
 
-  const contextRef = createRef()
-
   return (
-    <div ref={contextRef}>
+    <div ref={contextRef} className="app-shell">
       <Sticky context={contextRef}>
         <AccountSelector />
       </Sticky>
-      <Container>
-        <Grid stackable columns="equal">
-          <Grid.Row stretched>
-            <NodeInfo />
-            <Metadata />
-            <BlockNumber />
-            <BlockNumber finalized />
-          </Grid.Row>
+      <Container className="dashboard-container">
+        <Grid stackable columns="equal" className="dashboard-grid">
           <Grid.Row stretched columns={1}>
             <DidDataStorage />
           </Grid.Row>

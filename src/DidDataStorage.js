@@ -1,22 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import {
-  Button,
-  Card,
-  // Divider,
-  Dropdown,
-  Form,
-  Grid,
-  Header,
-  Icon,
-  Input,
-  Menu,
-  Message,
-  Segment,
-} from 'semantic-ui-react'
+import { Grid, Header, Icon } from 'semantic-ui-react'
 import {
   base58Decode,
   base58Encode,
-  blake2AsU8a,
 } from '@polkadot/util-crypto'
 import { web3Enable, web3FromSource } from '@polkadot/extension-dapp'
 import {
@@ -31,117 +17,23 @@ import {
 
 import { useSubstrateState } from './substrate-lib'
 import config from './config'
-
-const buildDidDocument = (didValue, chainData) => {
-  if (!didValue || !chainData) return null
-
-  const keys = Array.isArray(chainData.keys) ? chainData.keys : []
-  const services = Array.isArray(chainData.services) ? chainData.services : []
-
-  const verificationMethod = keys.map((key, index) => {
-    const material = Uint8Array.from(key.public_key || [])
-    const methodId = `${didValue}#keys-${index + 1}`
-
-    return {
-      id: methodId,
-      type: 'ML-DSA-44',
-      controller: didValue,
-      publicKeyMultibase: `z${base58Encode(material)}`,
-      revoked: key.revoked || false,
-      roles: key.roles || [],
-    }
-  })
-
-  const authentication = verificationMethod
-    .filter(method => (method.roles || []).includes('Authentication'))
-    .map(method => method.id)
-  const assertionMethod = verificationMethod
-    .filter(method => (method.roles || []).includes('AssertionMethod'))
-    .map(method => method.id)
-  const keyAgreement = verificationMethod
-    .filter(method => (method.roles || []).includes('KeyAgreement'))
-    .map(method => method.id)
-  const capabilityInvocation = verificationMethod
-    .filter(method => (method.roles || []).includes('CapabilityInvocation'))
-    .map(method => method.id)
-  const capabilityDelegation = verificationMethod
-    .filter(method => (method.roles || []).includes('CapabilityDelegation'))
-    .map(method => method.id)
-
-  const bytesToString = value => {
-    if (!value) return ''
-    if (typeof value === 'string') return value
-    try {
-      const text = u8aToString(Uint8Array.from(value))
-      return text || u8aToHex(Uint8Array.from(value))
-    } catch (error) {
-      return u8aToHex(Uint8Array.from(value))
-    }
-  }
-
-  const normalizedServices = services.map(service => {
-    const name = bytesToString(service.id)
-    const type = bytesToString(service.service_type || service.serviceType)
-    const endpoint = bytesToString(service.endpoint)
-
-    return {
-      id: name ? `${didValue}#${name}` : `${didValue}#service`,
-      type,
-      serviceEndpoint: endpoint,
-    }
-  })
-
-  const normalizedMetadata = Array.isArray(chainData.metadata)
-    ? chainData.metadata.map(entry => ({
-        key: bytesToString(entry.key),
-        value: bytesToString(entry.value),
-      }))
-    : []
-
-  return {
-    '@context': ['https://www.w3.org/ns/did/v1'],
-    id: didValue,
-    version: chainData.version ?? null,
-    deactivated: chainData.deactivated ?? false,
-    verificationMethod,
-    authentication,
-    assertionMethod,
-    keyAgreement,
-    capabilityInvocation,
-    capabilityDelegation,
-    service: normalizedServices,
-    metadata: normalizedMetadata,
-  }
-}
-
-const FEATURE_TABS = ['DID details', 'DID update', 'Schema']
-const DID_ADD_KEY_PREFIX = 'QSB_DID_ADD_KEY'
-const DID_REVOKE_KEY_PREFIX = 'QSB_DID_REVOKE_KEY'
-const DID_DEACTIVATE_PREFIX = 'QSB_DID_DEACTIVATE'
-const DID_ADD_SERVICE_PREFIX = 'QSB_DID_ADD_SERVICE'
-const DID_REMOVE_SERVICE_PREFIX = 'QSB_DID_REMOVE_SERVICE'
-const DID_SET_METADATA_PREFIX = 'QSB_DID_SET_METADATA'
-const DID_REMOVE_METADATA_PREFIX = 'QSB_DID_REMOVE_METADATA'
-const DID_UPDATE_ROLES_PREFIX = 'QSB_DID_UPDATE_ROLES'
-const ROLE_OPTIONS = [
-  { key: 'Authentication', text: 'Authentication', value: 'Authentication' },
-  {
-    key: 'AssertionMethod',
-    text: 'AssertionMethod',
-    value: 'AssertionMethod',
-  },
-  { key: 'KeyAgreement', text: 'KeyAgreement', value: 'KeyAgreement' },
-  {
-    key: 'CapabilityInvocation',
-    text: 'CapabilityInvocation',
-    value: 'CapabilityInvocation',
-  },
-  {
-    key: 'CapabilityDelegation',
-    text: 'CapabilityDelegation',
-    value: 'CapabilityDelegation',
-  },
-]
+import buildDidDocument from './did-data-storage/buildDidDocument'
+import {
+  DID_ADD_KEY_PREFIX,
+  DID_REVOKE_KEY_PREFIX,
+  DID_DEACTIVATE_PREFIX,
+  DID_ADD_SERVICE_PREFIX,
+  DID_REMOVE_SERVICE_PREFIX,
+  DID_SET_METADATA_PREFIX,
+  DID_REMOVE_METADATA_PREFIX,
+  DID_UPDATE_ROLES_PREFIX,
+  ROLE_OPTIONS,
+} from './did-data-storage/constants'
+import DidDetailsCard from './did-data-storage/components/DidDetailsCard'
+import DidUpdateCard from './did-data-storage/components/DidUpdateCard'
+import SchemaCard from './did-data-storage/components/SchemaCard'
+import SidebarPanels from './did-data-storage/components/SidebarPanels'
+import useSchemaActions from './did-data-storage/hooks/useSchemaActions'
 
 export default function DidDataStorage() {
   const { api, currentAccount } = useSubstrateState()
@@ -149,21 +41,30 @@ export default function DidDataStorage() {
   const [didDetailsError, setDidDetailsError] = useState('')
   const [didDetailsStatus, setDidDetailsStatus] = useState('')
   const [didDetailsDocument, setDidDetailsDocument] = useState(null)
+  const [didDetailsRaw, setDidDetailsRaw] = useState(null)
+  const [didDetailsView, setDidDetailsView] = useState('didDocument')
   const [isResolvingDid, setIsResolvingDid] = useState(false)
   const [didUpdateInput, setDidUpdateInput] = useState('')
   const [addKeyPublicKey, setAddKeyPublicKey] = useState('')
   const [addKeyRoles, setAddKeyRoles] = useState([])
+  const [isAddKeyModalOpen, setIsAddKeyModalOpen] = useState(false)
+  const [isKeyPreviewModalOpen, setIsKeyPreviewModalOpen] = useState(false)
+  const [selectedKeyPreview, setSelectedKeyPreview] = useState(null)
   const [updateRolesPublicKey, setUpdateRolesPublicKey] = useState('')
   const [updateRolesValues, setUpdateRolesValues] = useState([])
+  const [isUpdateRolesModalOpen, setIsUpdateRolesModalOpen] = useState(false)
   const [serviceIdInput, setServiceIdInput] = useState('')
   const [serviceTypeInput, setServiceTypeInput] = useState('')
   const [serviceEndpointInput, setServiceEndpointInput] = useState('')
+  const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false)
   const [metadataKeyInput, setMetadataKeyInput] = useState('')
   const [metadataValueInput, setMetadataValueInput] = useState('')
+  const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false)
+  const [metadataModalMode, setMetadataModalMode] = useState('add')
   const [didUpdateError, setDidUpdateError] = useState('')
   const [didUpdateStatus, setDidUpdateStatus] = useState('')
   const [isUpdatingDid, setIsUpdatingDid] = useState(false)
-  const [activeFeature, setActiveFeature] = useState(FEATURE_TABS[0])
+  const [activeFeature, setActiveFeature] = useState('DID details')
   const [didOptions, setDidOptions] = useState([])
   const [didOptionsError, setDidOptionsError] = useState('')
   const [isLoadingDids, setIsLoadingDids] = useState(false)
@@ -172,12 +73,8 @@ export default function DidDataStorage() {
   const [didUpdateLoadError, setDidUpdateLoadError] = useState('')
   const [isLoadingDidUpdate, setIsLoadingDidUpdate] = useState(false)
   const [schemaDidInput, setSchemaDidInput] = useState('')
-  const [schemaUrlInput, setSchemaUrlInput] = useState('')
-  const [schemaJsonInput, setSchemaJsonInput] = useState('')
-  const [schemaJsonError, setSchemaJsonError] = useState('')
-  const [schemaIdValue, setSchemaIdValue] = useState('')
-  const [isCreatingSchema, setIsCreatingSchema] = useState(false)
   const [toasts, setToasts] = useState([])
+  const [auditTimeline, setAuditTimeline] = useState([])
 
   const addToast = useCallback((type, content) => {
     const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`
@@ -185,6 +82,21 @@ export default function DidDataStorage() {
     setTimeout(() => {
       setToasts(prev => prev.filter(toast => toast.id !== id))
     }, 4500)
+  }, [])
+
+  const addAuditEntry = useCallback((entryType, details, data = {}) => {
+    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`
+    const timestamp = new Date().toISOString()
+    setAuditTimeline(prev => [
+      {
+        id,
+        entryType,
+        details,
+        timestamp,
+        ...data,
+      },
+      ...prev,
+    ].slice(0, 12))
   }, [])
 
   useEffect(() => {
@@ -332,6 +244,13 @@ export default function DidDataStorage() {
     }
   }
 
+  const compactValue = (value, head = 22, tail = 14) => {
+    if (!value || value.length <= head + tail + 3) {
+      return value
+    }
+    return `${value.slice(0, head)}...${value.slice(-tail)}`
+  }
+
   const normalizeRoles = roles =>
     (Array.isArray(roles) ? roles : [])
       .map(role => {
@@ -349,6 +268,27 @@ export default function DidDataStorage() {
       })
       .filter(Boolean)
 
+  const compactRawForDisplay = value => {
+    if (Array.isArray(value)) {
+      const isByteArray = value.every(
+        item => Number.isInteger(item) && item >= 0 && item <= 255
+      )
+      if (isByteArray) {
+        return u8aToHex(Uint8Array.from(value))
+      }
+      return value.map(item => compactRawForDisplay(item))
+    }
+
+    if (value && typeof value === 'object') {
+      return Object.entries(value).reduce((acc, [key, nested]) => {
+        acc[key] = compactRawForDisplay(nested)
+        return acc
+      }, {})
+    }
+
+    return value
+  }
+
   const resolveDidDetails = async () => {
     const provider = api?._rpcCore?.provider
     if (!provider) {
@@ -360,6 +300,7 @@ export default function DidDataStorage() {
     if (normalized.error) {
       setDidDetailsError(normalized.error)
       setDidDetailsDocument(null)
+      setDidDetailsRaw(null)
       return
     }
 
@@ -367,110 +308,58 @@ export default function DidDataStorage() {
     setDidDetailsStatus('Resolving DID...')
     setIsResolvingDid(true)
     setDidDetailsDocument(null)
+    setDidDetailsRaw(null)
+    setDidDetailsView('didDocument')
 
     try {
       const response = await provider.send('did_getByString', [normalized.did])
       const rpcResult = response?.result ?? response
       if (!rpcResult) {
         setDidDetailsDocument(null)
+        setDidDetailsRaw(null)
         setDidDetailsStatus('')
         setDidDetailsError('DID not found.')
+        addAuditEntry('warning', 'DID lookup returned no document.', {
+          did: normalized.did,
+        })
         return
       }
+      setDidDetailsRaw(rpcResult)
       setDidDetailsDocument(buildDidDocument(normalized.did, rpcResult))
       setDidDetailsStatus('DID resolved successfully.')
+      addAuditEntry('success', 'DID resolved.', {
+        did: normalized.did,
+      })
     } catch (error) {
       setDidDetailsStatus('')
       setDidDetailsError(`Failed to resolve DID: ${error.message}`)
+      addAuditEntry('error', `DID resolve failed: ${error.message}`, {
+        did: normalized.did,
+      })
     } finally {
       setIsResolvingDid(false)
     }
   }
 
   const renderDidDetailsCard = () => (
-    <Card fluid style={{ marginTop: '1.5em' }}>
-      <Card.Content>
-        <Card.Header>DID details</Card.Header>
-        <Card.Meta>Resolve DID via did_getByString RPC method.</Card.Meta>
-      </Card.Content>
-      <Card.Content>
-        <Form>
-          <Form.Group widths="equal">
-            <Form.Field error={Boolean(didDetailsError)} width={14}>
-              <label>Enter DID</label>
-              <Dropdown
-                fluid
-                selection
-                search
-                allowAdditions
-                placeholder="DID"
-                options={didOptions}
-                loading={isLoadingDids}
-                value={didDetailsInput}
-                onAddItem={(_, { value }) => {
-                  const newValue = String(value || '').trim()
-                  if (!newValue) {
-                    return
-                  }
-                  setDidOptions(prev => {
-                    if (prev.some(option => option.value === newValue)) {
-                      return prev
-                    }
-                    return [
-                      ...prev,
-                      { key: newValue, value: newValue, text: newValue },
-                    ]
-                  })
-                }}
-                onChange={(_, changed) => {
-                  setDidDetailsInput(changed.value)
-                  if (didDetailsError) {
-                    setDidDetailsError('')
-                  }
-                  if (didDetailsStatus) {
-                    setDidDetailsStatus('')
-                  }
-                }}
-              />
-            </Form.Field>
-            <Form.Field width={2} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-              <Button
-                primary
-                type="button"
-                onClick={resolveDidDetails}
-                loading={isResolvingDid}
-                disabled={isResolvingDid}
-                style={{ width: '140px' }}
-              >
-                Resolve
-              </Button>
-            </Form.Field>
-          </Form.Group>
-        </Form>
-        {didDetailsDocument && (
-          <Segment
-            style={{
-              marginTop: '.75em',
-              background: '#f9fafb',
-              overflowX: 'auto',
-            }}
-          >
-            <pre
-              style={{
-                margin: 0,
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-              }}
-              dangerouslySetInnerHTML={{
-                __html: jsonSyntaxHighlight(didDetailsDocument),
-              }}
-            >
-            </pre>
-          </Segment>
-        )}
-      </Card.Content>
-    </Card>
+    <DidDetailsCard
+      didDetailsError={didDetailsError}
+      didDetailsStatus={didDetailsStatus}
+      didDetailsInput={didDetailsInput}
+      didDetailsDocument={didDetailsDocument}
+      didDetailsRaw={compactRawForDisplay(didDetailsRaw)}
+      didDetailsView={didDetailsView}
+      didOptions={didOptions}
+      isLoadingDids={isLoadingDids}
+      isResolvingDid={isResolvingDid}
+      setDidDetailsInput={setDidDetailsInput}
+      setDidDetailsError={setDidDetailsError}
+      setDidDetailsStatus={setDidDetailsStatus}
+      setDidDetailsView={setDidDetailsView}
+      setDidOptions={setDidOptions}
+      resolveDidDetails={resolveDidDetails}
+      jsonSyntaxHighlight={jsonSyntaxHighlight}
+    />
   )
 
   const clearDidUpdateMessages = () => {
@@ -480,6 +369,26 @@ export default function DidDataStorage() {
     if (didUpdateStatus) {
       setDidUpdateStatus('')
     }
+  }
+
+  const toggleUpdateRole = roleValue => {
+    setUpdateRolesValues(prev => {
+      if (prev.includes(roleValue)) {
+        return prev.filter(role => role !== roleValue)
+      }
+      return [...prev, roleValue]
+    })
+    clearDidUpdateMessages()
+  }
+
+  const toggleAddKeyRole = roleValue => {
+    setAddKeyRoles(prev => {
+      if (prev.includes(roleValue)) {
+        return prev.filter(role => role !== roleValue)
+      }
+      return [...prev, roleValue]
+    })
+    clearDidUpdateMessages()
   }
 
   const toU8aInput = value => {
@@ -783,6 +692,42 @@ export default function DidDataStorage() {
     }
   }
 
+  const {
+    schemaUrlInput,
+    schemaJsonInput,
+    schemaJsonError,
+    isFetchingSchema,
+    schemaIdValue,
+    schemaAction,
+    schemaPreviewIdInput,
+    schemaPreviewRecord,
+    schemaEntriesForDid,
+    isLoadingSchemaEntries,
+    isLoadingSchemaPreview,
+    isDeprecatingSchema,
+    isCreatingSchema,
+    setSchemaAction,
+    setSchemaUrlInput,
+    setSchemaJsonInput,
+    setSchemaJsonError,
+    setSchemaIdValue,
+    setSchemaPreviewIdInput,
+    fetchSchemaFromUrl,
+    loadSchemaPreview,
+    submitCreateSchema,
+    submitDeprecateSchema,
+  } = useSchemaActions({
+    api,
+    currentAccount,
+    activeFeature,
+    schemaDidInput,
+    normalizeDidInput,
+    getFromAccount,
+    wrapSignerWithDid,
+    addToast,
+    addAuditEntry,
+  })
+
   const submitTx = async (tx, statusLabel, didForSignature) => {
     const fromAccount = await getFromAccount()
     if (!fromAccount) {
@@ -811,9 +756,19 @@ export default function DidDataStorage() {
               setDidUpdateError(
                 `Transaction failed: ${decoded.section}.${decoded.name}`
               )
+              addAuditEntry(
+                'error',
+                `Tx failed: ${decoded.section}.${decoded.name}`,
+                { did: didUpdateInput.trim() || null }
+              )
             } else {
               setDidUpdateError(
                 `Transaction failed: ${result.dispatchError.toString()}`
+              )
+              addAuditEntry(
+                'error',
+                `Tx failed: ${result.dispatchError.toString()}`,
+                { did: didUpdateInput.trim() || null }
               )
             }
             setDidUpdateStatus('')
@@ -825,6 +780,11 @@ export default function DidDataStorage() {
             setDidUpdateStatus(
               `Transaction finalized. Block: ${result.status.asFinalized.toString()}`
             )
+            addAuditEntry('success', 'Transaction finalized.', {
+              did: didUpdateInput.trim() || null,
+              block: result.status.asFinalized.toString(),
+              txHash: result.txHash?.toString?.() || null,
+            })
             setIsUpdatingDid(false)
             loadDidUpdateDetails()
           } else {
@@ -842,9 +802,19 @@ export default function DidDataStorage() {
               setDidUpdateError(
                 `Transaction failed: ${decoded.section}.${decoded.name}`
               )
+              addAuditEntry(
+                'error',
+                `Tx failed: ${decoded.section}.${decoded.name}`,
+                { did: didUpdateInput.trim() || null }
+              )
             } else {
               setDidUpdateError(
                 `Transaction failed: ${result.dispatchError.toString()}`
+              )
+              addAuditEntry(
+                'error',
+                `Tx failed: ${result.dispatchError.toString()}`,
+                { did: didUpdateInput.trim() || null }
               )
             }
             setDidUpdateStatus('')
@@ -856,6 +826,11 @@ export default function DidDataStorage() {
             setDidUpdateStatus(
               `Transaction finalized. Block: ${result.status.asFinalized.toString()}`
             )
+            addAuditEntry('success', 'Transaction finalized.', {
+              did: didUpdateInput.trim() || null,
+              block: result.status.asFinalized.toString(),
+              txHash: result.txHash?.toString?.() || null,
+            })
             setIsUpdatingDid(false)
             loadDidUpdateDetails()
           } else {
@@ -869,167 +844,32 @@ export default function DidDataStorage() {
     } catch (error) {
       setDidUpdateStatus('')
       setDidUpdateError(`Failed to submit: ${error.message}`)
+      addAuditEntry('error', `Submit failed: ${error.message}`, {
+        did: didUpdateInput.trim() || null,
+      })
       setIsUpdatingDid(false)
     }
   }
 
-  const submitSchemaTx = async (tx, statusLabel, didForSignature) => {
-    const fromAccount = await getFromAccount()
-    if (!fromAccount) {
-      addToast('error', 'Unable to sign the transaction.')
-      return
-    }
-
-    setIsCreatingSchema(true)
-    addToast('info', statusLabel)
-
-    try {
-      const [addressOrPair, options] = fromAccount
-      const hasInjectedSigner = Boolean(options?.signer)
-      const signer = hasInjectedSigner
-        ? wrapSignerWithDid(options.signer, didForSignature)
-        : undefined
-
-      const signPromise = hasInjectedSigner
-        ? tx.signAndSend(addressOrPair, { ...options, signer }, result => {
-          if (result.dispatchError) {
-            if (result.dispatchError.isModule) {
-              const decoded = api.registry.findMetaError(
-                result.dispatchError.asModule
-              )
-              addToast('error', `Transaction failed: ${decoded.section}.${decoded.name}`)
-            } else {
-              addToast('error', `Transaction failed: ${result.dispatchError.toString()}`)
-            }
-            setIsCreatingSchema(false)
-            return
-          }
-
-          if (result.status.isFinalized) {
-            addToast(
-              'info',
-              `Transaction finalized. Block: ${result.status.asFinalized.toString()}`
-            )
-            setIsCreatingSchema(false)
-          }
-        })
-        : tx.signAndSend(...fromAccount, result => {
-          if (result.dispatchError) {
-            if (result.dispatchError.isModule) {
-              const decoded = api.registry.findMetaError(
-                result.dispatchError.asModule
-              )
-              addToast('error', `Transaction failed: ${decoded.section}.${decoded.name}`)
-            } else {
-              addToast('error', `Transaction failed: ${result.dispatchError.toString()}`)
-            }
-            setIsCreatingSchema(false)
-            return
-          }
-
-          if (result.status.isFinalized) {
-            addToast(
-              'info',
-              `Transaction finalized. Block: ${result.status.asFinalized.toString()}`
-            )
-            setIsCreatingSchema(false)
-          }
-        })
-
-      await signPromise
-    } catch (error) {
-      addToast('error', `Failed to submit: ${error.message}`)
-      setIsCreatingSchema(false)
-    }
-  }
-
-  const buildSchemaId = schemaJson => {
-    if (!api?.genesisHash) {
-      return ''
-    }
-    const schemaBytes = stringToU8a(schemaJson)
-    const material = u8aConcat(
-      stringToU8a('QSB_SCHEMA'),
-      api.genesisHash.toU8a(),
-      schemaBytes
-    )
-    const schemaId = blake2AsU8a(material, 256)
-    return `did:qsb:schema:${base58Encode(schemaId)}`
-  }
-
-  const submitCreateSchema = async () => {
-    if (!ensureApiReady()) {
-      return
-    }
-
-    const didValue = normalizeDidInput(schemaDidInput)
-    if (didValue.error) {
-      addToast('error', didValue.error)
-      return
-    }
-
-    if (!schemaUrlInput.trim()) {
-      addToast('error', 'Enter a schema URL.')
-      return
-    }
-
-    if (!schemaJsonInput.trim()) {
-      addToast('error', 'Enter a JSON schema.')
-      return
-    }
-
-    try {
-      JSON.parse(schemaJsonInput)
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Invalid JSON.'
-      setSchemaJsonError(message)
-      addToast('error', `Invalid JSON: ${message}`)
-      return
-    }
-
-    const schemaId = buildSchemaId(schemaJsonInput.trim())
-    setSchemaIdValue(schemaId)
-
-    if (!api?.tx?.schema?.registerSchema) {
-      addToast('error', 'Schema pallet is not available in this runtime.')
-      return
-    }
-
-    const schemaJsonHex = stringToHex(schemaJsonInput.trim())
-    const schemaUrlHex = stringToHex(schemaUrlInput.trim())
-    const issuerDidHex = stringToHex(didValue.did)
-
-    await submitSchemaTx(
-      api.tx.schema.registerSchema(
-        schemaJsonHex,
-        schemaUrlHex,
-        issuerDidHex,
-        new Uint8Array()
-      ),
-      'Registering schema...',
-      didValue.did
-    )
-  }
-
   const submitAddKey = async () => {
     if (!ensureApiReady()) {
-      return
+      return false
     }
 
     const didValue = ensureDidValue()
     if (!didValue) {
-      return
+      return false
     }
 
     const publicKey = toU8aInput(addKeyPublicKey)
     if (!publicKey) {
       setDidUpdateError('Enter a public key to add.')
-      return
+      return false
     }
 
     if (!addKeyRoles.length) {
       setDidUpdateError('Select at least one role.')
-      return
+      return false
     }
 
     const payload = buildDidPayload(
@@ -1043,6 +883,7 @@ export default function DidDataStorage() {
       'Adding key...',
       null
     )
+    return true
   }
 
   const submitRevokeKeyValue = async publicKeyValue => {
@@ -1099,30 +940,30 @@ export default function DidDataStorage() {
 
   const submitAddService = async () => {
     if (!ensureApiReady()) {
-      return
+      return false
     }
 
     const didValue = ensureDidValue()
     if (!didValue) {
-      return
+      return false
     }
 
     const serviceId = toU8aInput(serviceIdInput)
     if (!serviceId) {
       setDidUpdateError('Enter a service id.')
-      return
+      return false
     }
 
     const serviceType = toU8aInput(serviceTypeInput)
     if (!serviceType) {
       setDidUpdateError('Enter a service type.')
-      return
+      return false
     }
 
     const endpoint = toU8aInput(serviceEndpointInput)
     if (!endpoint) {
       setDidUpdateError('Enter a service endpoint.')
-      return
+      return false
     }
 
     const service = {
@@ -1142,6 +983,7 @@ export default function DidDataStorage() {
       'Adding service...',
       null
     )
+    return true
   }
 
   const submitRemoveServiceValue = async serviceIdValue => {
@@ -1175,24 +1017,24 @@ export default function DidDataStorage() {
 
   const submitSetMetadata = async () => {
     if (!ensureApiReady()) {
-      return
+      return false
     }
 
     const didValue = ensureDidValue()
     if (!didValue) {
-      return
+      return false
     }
 
     const key = toU8aInput(metadataKeyInput)
     if (!key) {
       setDidUpdateError('Enter a metadata key.')
-      return
+      return false
     }
 
     const value = toU8aInput(metadataValueInput)
     if (!value) {
       setDidUpdateError('Enter a metadata value.')
-      return
+      return false
     }
 
     const entry = {
@@ -1207,6 +1049,7 @@ export default function DidDataStorage() {
       'Setting metadata...',
       null
     )
+    return true
   }
 
   const submitRemoveMetadataValue = async keyValue => {
@@ -1240,23 +1083,34 @@ export default function DidDataStorage() {
 
   const submitUpdateRoles = async () => {
     if (!ensureApiReady()) {
-      return
+      return false
     }
 
     const didValue = ensureDidValue()
     if (!didValue) {
-      return
+      return false
     }
 
     const publicKey = toU8aInput(updateRolesPublicKey)
     if (!publicKey) {
       setDidUpdateError('Enter a public key.')
-      return
+      return false
+    }
+
+    const knownKeys = Array.isArray(didUpdateChainData?.keys)
+      ? didUpdateChainData.keys
+      : []
+    const matchedKey = knownKeys.find(
+      key => formatBytesHex(key.public_key) === publicKey
+    )
+    if (matchedKey?.revoked) {
+      setDidUpdateError('Revoked key cannot be updated.')
+      return false
     }
 
     if (!updateRolesValues.length) {
       setDidUpdateError('Select at least one role.')
-      return
+      return false
     }
 
     const payload = buildDidPayload(
@@ -1275,579 +1129,104 @@ export default function DidDataStorage() {
       'Updating roles...',
       null
     )
+    return true
   }
 
-  const renderDidUpdateCard = () => {
-    const keys = Array.isArray(didUpdateChainData?.keys)
-      ? didUpdateChainData.keys
-      : []
-    const services = Array.isArray(didUpdateChainData?.services)
-      ? didUpdateChainData.services
-      : []
-    const metadata = Array.isArray(didUpdateChainData?.metadata)
-      ? didUpdateChainData.metadata
-      : []
+  const renderDidUpdateCard = () => (
+    <DidUpdateCard
+      didUpdateInput={didUpdateInput}
+      didOptions={didOptions}
+      isLoadingDids={isLoadingDids}
+      isLoadingDidUpdate={isLoadingDidUpdate}
+      didUpdateSection={didUpdateSection}
+      didUpdateChainData={didUpdateChainData}
+      isUpdatingDid={isUpdatingDid}
+      addKeyPublicKey={addKeyPublicKey}
+      addKeyRoles={addKeyRoles}
+      isAddKeyModalOpen={isAddKeyModalOpen}
+      isKeyPreviewModalOpen={isKeyPreviewModalOpen}
+      selectedKeyPreview={selectedKeyPreview}
+      updateRolesPublicKey={updateRolesPublicKey}
+      updateRolesValues={updateRolesValues}
+      isUpdateRolesModalOpen={isUpdateRolesModalOpen}
+      serviceIdInput={serviceIdInput}
+      serviceTypeInput={serviceTypeInput}
+      serviceEndpointInput={serviceEndpointInput}
+      isAddServiceModalOpen={isAddServiceModalOpen}
+      metadataKeyInput={metadataKeyInput}
+      metadataValueInput={metadataValueInput}
+      isMetadataModalOpen={isMetadataModalOpen}
+      metadataModalMode={metadataModalMode}
+      setDidUpdateInput={setDidUpdateInput}
+      setDidOptions={setDidOptions}
+      setAddKeyPublicKey={setAddKeyPublicKey}
+      setAddKeyRoles={setAddKeyRoles}
+      setIsAddKeyModalOpen={setIsAddKeyModalOpen}
+      setIsKeyPreviewModalOpen={setIsKeyPreviewModalOpen}
+      setSelectedKeyPreview={setSelectedKeyPreview}
+      setUpdateRolesPublicKey={setUpdateRolesPublicKey}
+      setUpdateRolesValues={setUpdateRolesValues}
+      setIsUpdateRolesModalOpen={setIsUpdateRolesModalOpen}
+      setServiceIdInput={setServiceIdInput}
+      setServiceTypeInput={setServiceTypeInput}
+      setServiceEndpointInput={setServiceEndpointInput}
+      setIsAddServiceModalOpen={setIsAddServiceModalOpen}
+      setMetadataKeyInput={setMetadataKeyInput}
+      setMetadataValueInput={setMetadataValueInput}
+      setIsMetadataModalOpen={setIsMetadataModalOpen}
+      setMetadataModalMode={setMetadataModalMode}
+      clearDidUpdateMessages={clearDidUpdateMessages}
+      submitRevokeKeyValue={submitRevokeKeyValue}
+      submitUpdateRoles={submitUpdateRoles}
+      submitAddKey={submitAddKey}
+      submitRemoveServiceValue={submitRemoveServiceValue}
+      submitAddService={submitAddService}
+      submitRemoveMetadataValue={submitRemoveMetadataValue}
+      submitSetMetadata={submitSetMetadata}
+      submitDeactivateDid={submitDeactivateDid}
+      toggleUpdateRole={toggleUpdateRole}
+      toggleAddKeyRole={toggleAddKeyRole}
+      compactRawForDisplay={compactRawForDisplay}
+      compactValue={compactValue}
+      formatBytesHex={formatBytesHex}
+      formatBytesText={formatBytesText}
+      normalizeRoles={normalizeRoles}
+    />
+  )
 
+  const renderSchemaCard = () => {
     return (
-      <Card fluid style={{ marginTop: '1.5em' }}>
-      <Card.Content>
-        <Card.Header>DID update</Card.Header>
-        <Card.Meta>Manage DID keys, services, and metadata on-chain.</Card.Meta>
-      </Card.Content>
-      <Card.Content>
-        <Form>
-          <Form.Field>
-            <label>Target DID</label>
-            <Dropdown
-              fluid
-              selection
-              search
-              allowAdditions
-              placeholder="DID"
-              options={didOptions}
-              loading={isLoadingDids}
-              value={didUpdateInput}
-              onAddItem={(_, { value }) => {
-                const newValue = String(value || '').trim()
-                if (!newValue) {
-                  return
-                }
-                setDidOptions(prev => {
-                  if (prev.some(option => option.value === newValue)) {
-                    return prev
-                  }
-                  return [
-                    ...prev,
-                    { key: newValue, value: newValue, text: newValue },
-                  ]
-                })
-              }}
-              onChange={(_, changed) => {
-                setDidUpdateInput(changed.value)
-                clearDidUpdateMessages()
-              }}
-            />
-          </Form.Field>
-        </Form>
-        <Form>
-          <Form.Field>
-            <label>What to update</label>
-            <Dropdown
-              fluid
-              selection
-              options={[
-                { key: 'keys', text: 'Keys', value: 'Keys' },
-                { key: 'services', text: 'Services', value: 'Services' },
-                { key: 'metadata', text: 'Metadata', value: 'Metadata' },
-                { key: 'deactivate', text: 'Deactivate DID', value: 'Deactivate DID' },
-              ]}
-              value={didUpdateSection}
-              onChange={(_, changed) => setDidUpdateSection(changed.value)}
-            />
-          </Form.Field>
-        </Form>
-        {isLoadingDidUpdate && (
-          <Message
-            info
-            size="small"
-            style={{ marginTop: '.5em' }}
-            content="Loading DID data..."
-          />
-        )}
-        {didUpdateSection === 'Keys' && (
-          <Segment>
-            <Header as="h4">Existing keys</Header>
-            {keys.length === 0 ? (
-              <Message size="small" info content="No keys found for this DID." />
-            ) : (
-              keys.map((key, index) => {
-                const publicKeyHex = formatBytesHex(key.public_key)
-                const roles = normalizeRoles(key.roles)
-                const isRevoked = Boolean(key.revoked)
-
-                return (
-                  <Segment key={`${publicKeyHex}-${index}`}>
-                    <Header as="h5">Key {index + 1}</Header>
-                    <div style={{ wordBreak: 'break-word' }}>
-                      <strong>Public key:</strong> {publicKeyHex || '—'}
-                    </div>
-                    <div>
-                      <strong>Roles:</strong>{' '}
-                      {roles.length ? roles.join(', ') : '—'}
-                    </div>
-                    <div>
-                      <strong>Status:</strong> {isRevoked ? 'revoked' : 'active'}
-                    </div>
-                    <Button
-                      negative
-                      type="button"
-                      onClick={() => submitRevokeKeyValue(publicKeyHex)}
-                      loading={isUpdatingDid}
-                      disabled={isUpdatingDid || isRevoked}
-                      style={{ marginTop: '.5em' }}
-                    >
-                      Revoke
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setUpdateRolesPublicKey(publicKeyHex)
-                        setUpdateRolesValues(roles)
-                        clearDidUpdateMessages()
-                      }}
-                      disabled={isUpdatingDid}
-                      style={{ marginTop: '.5em' }}
-                    >
-                      Update roles
-                    </Button>
-                  </Segment>
-                )
-              })
-            )}
-            <Header as="h4" style={{ marginTop: '1.5em' }}>
-              Update roles
-            </Header>
-            <Form>
-              <Form.Field>
-                <label>Public key</label>
-                <Input
-                  fluid
-                  placeholder="0x... or text"
-                  value={updateRolesPublicKey}
-                  onChange={(_, changed) => {
-                    setUpdateRolesPublicKey(changed.value)
-                    clearDidUpdateMessages()
-                  }}
-                />
-              </Form.Field>
-              <Form.Field>
-                <label>Roles</label>
-                <Dropdown
-                  fluid
-                  multiple
-                  selection
-                  search
-                  options={ROLE_OPTIONS}
-                  placeholder="Select roles"
-                  value={updateRolesValues}
-                  onChange={(_, changed) => {
-                    setUpdateRolesValues(changed.value)
-                    clearDidUpdateMessages()
-                  }}
-                />
-              </Form.Field>
-              <Button
-                primary
-                type="button"
-                onClick={submitUpdateRoles}
-                loading={isUpdatingDid}
-                disabled={isUpdatingDid}
-              >
-                Update roles
-              </Button>
-            </Form>
-            <Header as="h4" style={{ marginTop: '1.5em' }}>
-              Add new key
-            </Header>
-            <Form>
-              <Form.Field>
-                <label>Public key</label>
-                <Input
-                  fluid
-                  placeholder="0x... or text"
-                  value={addKeyPublicKey}
-                  onChange={(_, changed) => {
-                    setAddKeyPublicKey(changed.value)
-                    clearDidUpdateMessages()
-                  }}
-                />
-              </Form.Field>
-              <Form.Field>
-                <label>Roles</label>
-                <Dropdown
-                  fluid
-                  multiple
-                  selection
-                  search
-                  options={ROLE_OPTIONS}
-                  placeholder="Select roles"
-                  value={addKeyRoles}
-                  onChange={(_, changed) => {
-                    setAddKeyRoles(changed.value)
-                    clearDidUpdateMessages()
-                  }}
-                />
-              </Form.Field>
-              <Button
-                primary
-                type="button"
-                onClick={submitAddKey}
-                loading={isUpdatingDid}
-                disabled={isUpdatingDid}
-              >
-                Add key
-              </Button>
-            </Form>
-          </Segment>
-        )}
-        {didUpdateSection === 'Services' && (
-          <Segment>
-            <Header as="h4">Existing Services</Header>
-            {services.length === 0 ? (
-              <Message size="small" info content="No services found for this DID." />
-            ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gap: '1em',
-                  gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-                  alignItems: 'stretch',
-                  gridAutoRows: '1fr',
-                }}
-              >
-                {services.map((service, index) => {
-                  const serviceIdHex = formatBytesHex(service.id)
-                  const serviceIdText = formatBytesText(service.id)
-                  const serviceTypeText = formatBytesText(service.service_type)
-                  const endpointText = formatBytesText(service.endpoint)
-                  const normalizedDid = normalizeDidInput(didUpdateInput)
-                  const ownerDid = normalizedDid?.did || didUpdateInput.trim()
-                  const serviceName = serviceIdText || serviceIdHex || '—'
-
-                  return (
-                    <Segment
-                      key={`${serviceIdHex}-${index}`}
-                      style={{
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                        minHeight: '180px',
-                        margin: 0,
-                      }}
-                    >
-                      <div style={{ marginBottom: '.5em' }}>
-                        <Header as="h5" style={{ marginBottom: 0 }}>
-                          Service {index + 1}
-                        </Header>
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ wordBreak: 'break-word' }}>
-                          <strong>Name:</strong> {ownerDid}#{serviceName}
-                        </div>
-                        <div style={{ wordBreak: 'break-word' }}>
-                          <strong>Type:</strong> {serviceTypeText || '—'}
-                        </div>
-                        <div style={{ wordBreak: 'break-word' }}>
-                          <strong>Endpoint:</strong> {endpointText || '—'}
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right', marginTop: 'auto' }}>
-                        <Button
-                          negative
-                          type="button"
-                          onClick={() => submitRemoveServiceValue(serviceIdHex)}
-                          loading={isUpdatingDid}
-                          disabled={isUpdatingDid}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </Segment>
-                  )
-                })}
-              </div>
-            )}
-            <Header as="h4" style={{ marginTop: '1.5em' }}>
-              Add New Service
-            </Header>
-            <Form>
-              <Form.Group widths="equal">
-                <Form.Field>
-                  <Input
-                    fluid
-                    placeholder="Name"
-                    value={serviceIdInput}
-                    onChange={(_, changed) => {
-                      setServiceIdInput(changed.value)
-                      clearDidUpdateMessages()
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <Input
-                    fluid
-                    placeholder="Type"
-                    value={serviceTypeInput}
-                    onChange={(_, changed) => {
-                      setServiceTypeInput(changed.value)
-                      clearDidUpdateMessages()
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <Input
-                    fluid
-                    placeholder="Endpoint"
-                    value={serviceEndpointInput}
-                    onChange={(_, changed) => {
-                      setServiceEndpointInput(changed.value)
-                      clearDidUpdateMessages()
-                    }}
-                  />
-                </Form.Field>
-              </Form.Group>
-              <Button
-                primary
-                type="button"
-                onClick={submitAddService}
-                loading={isUpdatingDid}
-                disabled={isUpdatingDid}
-              >
-                Add service
-              </Button>
-            </Form>
-          </Segment>
-        )}
-        {didUpdateSection === 'Metadata' && (
-          <Segment>
-            <Header as="h4">Existing Metadata</Header>
-            {metadata.length === 0 ? (
-              <Message size="small" info content="No metadata found for this DID." />
-            ) : (
-              <div
-                style={{
-                  display: 'grid',
-                  gap: '1em',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                  alignItems: 'stretch',
-                  gridAutoRows: '1fr',
-                }}
-              >
-                {metadata.map((entry, index) => {
-                  const keyHex = formatBytesHex(entry.key)
-                  const keyText = formatBytesText(entry.key)
-                  const valueText = formatBytesText(entry.value)
-
-                  return (
-                    <Segment
-                      key={`${keyHex}-${index}`}
-                      style={{
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                        minHeight: '180px',
-                        margin: 0,
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginBottom: '.5em',
-                        }}
-                      >
-                        <Header as="h5" style={{ marginBottom: 0 }}>
-                          Entry {index + 1}
-                        </Header>
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ wordBreak: 'break-word' }}>
-                          <strong>Key:</strong> {keyText || keyHex || '—'}
-                        </div>
-                        <div style={{ wordBreak: 'break-word' }}>
-                          <strong>Value:</strong> {valueText || '—'}
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                          gap: '.5em',
-                          marginTop: 'auto',
-                        }}
-                      >
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            setMetadataKeyInput(keyText || keyHex)
-                            setMetadataValueInput(valueText)
-                            clearDidUpdateMessages()
-                          }}
-                          disabled={isUpdatingDid}
-                        >
-                          Update
-                        </Button>
-                        <Button
-                          negative
-                          type="button"
-                          onClick={() => submitRemoveMetadataValue(keyHex)}
-                          loading={isUpdatingDid}
-                          disabled={isUpdatingDid}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </Segment>
-                  )
-                })}
-              </div>
-            )}
-            <Header as="h4" style={{ marginTop: '1.5em' }}>
-              Add New Metadata
-            </Header>
-            <Form>
-              <Form.Group widths="equal">
-                <Form.Field>
-                  <Input
-                    fluid
-                    placeholder="Key"
-                    value={metadataKeyInput}
-                    onChange={(_, changed) => {
-                      setMetadataKeyInput(changed.value)
-                      clearDidUpdateMessages()
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <Input
-                    fluid
-                    placeholder="Value"
-                    value={metadataValueInput}
-                    onChange={(_, changed) => {
-                      setMetadataValueInput(changed.value)
-                      clearDidUpdateMessages()
-                    }}
-                  />
-                </Form.Field>
-              </Form.Group>
-              <Button
-                primary
-                type="button"
-                onClick={submitSetMetadata}
-                loading={isUpdatingDid}
-                disabled={isUpdatingDid}
-              >
-                Set metadata
-              </Button>
-            </Form>
-          </Segment>
-        )}
-        {didUpdateSection === 'Deactivate DID' && (
-          <Segment>
-            <Header as="h4">Deactivate DID</Header>
-            <Button
-              negative
-              type="button"
-              onClick={submitDeactivateDid}
-              loading={isUpdatingDid}
-              disabled={isUpdatingDid}
-            >
-              Deactivate DID
-            </Button>
-          </Segment>
-        )}
-      </Card.Content>
-      </Card>
+      <SchemaCard
+        didOptions={didOptions}
+        isLoadingDids={isLoadingDids}
+        schemaAction={schemaAction}
+        schemaDidInput={schemaDidInput}
+        schemaUrlInput={schemaUrlInput}
+        schemaJsonInput={schemaJsonInput}
+        schemaJsonError={schemaJsonError}
+        isFetchingSchema={isFetchingSchema}
+        schemaIdValue={schemaIdValue}
+        schemaPreviewIdInput={schemaPreviewIdInput}
+        schemaPreviewRecord={schemaPreviewRecord}
+        schemaEntriesForDid={schemaEntriesForDid}
+        isLoadingSchemaEntries={isLoadingSchemaEntries}
+        isLoadingSchemaPreview={isLoadingSchemaPreview}
+        isDeprecatingSchema={isDeprecatingSchema}
+        isCreatingSchema={isCreatingSchema}
+        setDidOptions={setDidOptions}
+        setSchemaDidInput={setSchemaDidInput}
+        setSchemaUrlInput={setSchemaUrlInput}
+        setSchemaJsonInput={setSchemaJsonInput}
+        setSchemaJsonError={setSchemaJsonError}
+        setSchemaIdValue={setSchemaIdValue}
+        setSchemaPreviewIdInput={setSchemaPreviewIdInput}
+        fetchSchemaFromUrl={fetchSchemaFromUrl}
+        submitCreateSchema={submitCreateSchema}
+        submitDeprecateSchema={submitDeprecateSchema}
+        loadSchemaPreview={loadSchemaPreview}
+      />
     )
   }
-
-  const renderSchemaCard = () => (
-    <Card fluid style={{ marginTop: '1.5em' }}>
-      <Card.Content>
-        <Card.Header>Schema</Card.Header>
-        <Card.Meta>Create a credential schema for a DID.</Card.Meta>
-      </Card.Content>
-      <Card.Content>
-        <Form>
-          <Form.Field>
-            <label>Target DID</label>
-            <Dropdown
-              fluid
-              selection
-              search
-              allowAdditions
-              placeholder="DID"
-              options={didOptions}
-              loading={isLoadingDids}
-              value={schemaDidInput}
-              onAddItem={(_, { value }) => {
-                const newValue = String(value || '').trim()
-                if (!newValue) {
-                  return
-                }
-                setDidOptions(prev => {
-                  if (prev.some(option => option.value === newValue)) {
-                    return prev
-                  }
-                  return [
-                    ...prev,
-                    { key: newValue, value: newValue, text: newValue },
-                  ]
-                })
-              }}
-              onChange={(_, changed) => {
-                setSchemaDidInput(changed.value)
-                setSchemaJsonError('')
-                setSchemaIdValue('')
-              }}
-            />
-          </Form.Field>
-          <Form.Field>
-            <label>Schema URL</label>
-            <Input
-              placeholder="https://example.com/schema.json"
-              value={schemaUrlInput}
-              onChange={(_, changed) => {
-                setSchemaUrlInput(changed.value)
-                setSchemaIdValue('')
-              }}
-            />
-          </Form.Field>
-          <Form.Field error={Boolean(schemaJsonError)}>
-            <label>Credential schema (JSON)</label>
-            <Form.TextArea
-              placeholder='{"$schema":"https://json-schema.org/draft/2020-12/schema"}'
-              rows={8}
-              value={schemaJsonInput}
-              onChange={(_, changed) => {
-                setSchemaJsonInput(changed.value)
-                if (schemaJsonError) {
-                  setSchemaJsonError('')
-                }
-                setSchemaIdValue('')
-              }}
-            />
-            {schemaJsonError && (
-              <div style={{ color: '#a94442', marginTop: '6px' }}>
-                {schemaJsonError}
-              </div>
-            )}
-          </Form.Field>
-          <Form.Field>
-            <label>Schema ID</label>
-            <Input
-              fluid
-              readOnly
-              placeholder="Schema ID will appear after validation"
-              value={schemaIdValue}
-            />
-          </Form.Field>
-          <Button
-            primary
-            type="button"
-            onClick={submitCreateSchema}
-            loading={isCreatingSchema}
-            disabled={isCreatingSchema}
-          >
-            Create schema
-          </Button>
-        </Form>
-      </Card.Content>
-    </Card>
-  )
 
   const renderFeatureContent = () => {
     if (activeFeature === 'DID details') {
@@ -1862,74 +1241,43 @@ export default function DidDataStorage() {
   }
 
   return (
-    <Grid.Column width={16}>
-      <div
-        style={{
-          position: 'fixed',
-          top: '16px',
-          right: '16px',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          maxWidth: '520px',
-          width: '420px',
-        }}
-      >
+    <Grid.Column width={16} className="did-control-center">
+      <div className="toast-container">
         {toasts.map(toast => (
-          <div
-            key={toast.id}
-            style={{
-              background: toast.type === 'error' ? '#8f1d1d' : '#0b8a82',
-              color: '#fff',
-              borderRadius: '6px',
-              padding: '10px 12px',
-              boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
-              fontSize: '0.95em',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '8px',
-              textAlign: 'center',
-            }}
-          >
-            <span style={{ flex: 1, textAlign: 'center', whiteSpace: 'normal' }}>
+          <div key={toast.id} className={`toast-item toast-${toast.type}`}>
+            <span className="toast-text">
               {toast.content}
             </span>
             <button
               type="button"
               onClick={() => setToasts(prev => prev.filter(item => item.id !== toast.id))}
-              style={{
-                border: 'none',
-                background: 'transparent',
-                color: '#fff',
-                cursor: 'pointer',
-                fontSize: '1em',
-                lineHeight: 1,
-              }}
+              className="toast-close"
             >
               ×
             </button>
           </div>
         ))}
       </div>
-      <Header as="h2" dividing style={{ marginBottom: '0.75em' }}>
+      <Header as="h2" dividing className="did-title">
         <Icon name="cogs" color="grey" />
         <Header.Content>DID Control Center</Header.Content>
       </Header>
-
-      <Menu pointing secondary stackable style={{ marginBottom: '1.5em' }}>
-        {FEATURE_TABS.map(tab => (
-          <Menu.Item
-            key={tab}
-            name={tab}
-            active={activeFeature === tab}
-            onClick={() => setActiveFeature(tab)}
+      <div className="did-layout">
+        <aside className="did-sidebar">
+          <SidebarPanels
+            activeFeature={activeFeature}
+            didUpdateSection={didUpdateSection}
+            setActiveFeature={setActiveFeature}
+            setDidUpdateSection={setDidUpdateSection}
+            schemaAction={schemaAction}
+            setSchemaAction={setSchemaAction}
+            auditTimeline={auditTimeline}
           />
-        ))}
-      </Menu>
-
-      {renderFeatureContent()}
+        </aside>
+        <div>
+          {renderFeatureContent()}
+        </div>
+      </div>
     </Grid.Column>
   )
 }
