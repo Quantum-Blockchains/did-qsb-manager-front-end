@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "16.20.2"
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Print tool versions
+        run: |
+          node -v
+          yarn -v
+
+      - name: Install dependencies
+        run: |
+          for i in 1 2 3; do
+            yarn install --inline-builds && exit 0
+            echo "Install failed (attempt $i/3), retrying in 15s..."
+            sleep 15
+          done
+          echo "Install failed after 3 attempts."
+          exit 1
+
+      - name: ESLint
+        run: yarn eslint:check
+
+      - name: Test
+        run: CI=true yarn test --watchAll=false --passWithNoTests
+
+      - name: Build
+        run: yarn build

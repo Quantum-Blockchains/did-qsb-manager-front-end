@@ -4909,15 +4909,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bindings@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "bindings@npm:1.5.0"
-  dependencies:
-    file-uri-to-path: 1.0.0
-  checksum: 65b6b48095717c2e6105a021a7da4ea435aa8d3d3cd085cb9e85bcb6e5773cf318c4745c3f7c504412855940b585bdf9b918236612a1c7a7942491de176f1ae7
-  languageName: node
-  linkType: hard
-
 "bluebird@npm:^3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
@@ -6457,17 +6448,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ed25519@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "ed25519@npm:0.0.5"
-  dependencies:
-    bindings: ^1.5.0
-    nan: ^2.14.1
-    node-gyp: latest
-  checksum: b4951ac66e71334940131646fc5dc360e85c8ba86d8af0e648a02f0e0ded8487d275908040340abc3f446c8e933e49008152c1d1eeb141981fe191bb3b14b793
-  languageName: node
-  linkType: hard
-
 "ee-first@npm:1.1.1":
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
@@ -7628,13 +7608,6 @@ __metadata:
   peerDependencies:
     webpack: ^4.0.0 || ^5.0.0
   checksum: faf43eecf233f4897b0150aaa874eeeac214e4f9de49738a9e0ef734a30b5260059e85b7edadf852b98e415f875bd5f12587768a93fd52aaf2e479ecf95fab20
-  languageName: node
-  linkType: hard
-
-"file-uri-to-path@npm:1.0.0":
-  version: 1.0.0
-  resolution: "file-uri-to-path@npm:1.0.0"
-  checksum: b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
   languageName: node
   linkType: hard
 
@@ -10682,15 +10655,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.14.1":
-  version: 2.23.1
-  resolution: "nan@npm:2.23.1"
-  dependencies:
-    node-gyp: latest
-  checksum: 93b39c8ef832bd4794c8ee4ae06c1017f9e0d313025f075922d549d31326e6b3e53eeea1edccae7a307eb61107aa7cd4238f7612f3ffc1d043c2da9724bb3a67
-  languageName: node
-  linkType: hard
-
 "nanoid@npm:^3.3.11":
   version: 3.3.11
   resolution: "nanoid@npm:3.3.11"
@@ -12541,6 +12505,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qsb-did-manager-frontend@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "qsb-did-manager-frontend@workspace:."
+  dependencies:
+    "@polkadot/api": ^10.6.1
+    "@polkadot/extension-dapp": ^0.46.2
+    "@polkadot/keyring": ^12.1.2
+    "@polkadot/networks": ^12.1.2
+    "@polkadot/types": ^10.6.1
+    "@polkadot/ui-keyring": ^3.3.1
+    "@polkadot/ui-settings": ^3.3.1
+    "@polkadot/util": ^12.1.2
+    "@polkadot/util-crypto": ^12.1.2
+    base58: ^2.0.1
+    eslint: ^8.10.0
+    eslint-config-prettier: ^8.4.0
+    eslint-config-react-app: ^7.0.0
+    gh-pages: ^3.2.3
+    node-polyfill-webpack-plugin: ^1.1.4
+    prettier: 2.5.1
+    prop-types: ^15.8.1
+    react: ^17.0.2
+    react-app-rewired: ^2.2.1
+    react-copy-to-clipboard: ^5.0.4
+    react-dom: ^17.0.2
+    react-scripts: ^5.0.0
+    semantic-ui-css: ^2.5.0
+    semantic-ui-react: ^2.1.2
+    semistandard: ^16.0.1
+    stream-browserify: ^3.0.0
+    three: ^0.165.0
+  languageName: unknown
+  linkType: soft
+
 "querystring-es3@npm:^0.2.1":
   version: 0.2.1
   resolution: "querystring-es3@npm:0.2.1"
@@ -13392,12 +13390,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semantic-ui-css@Semantic-Org/Semantic-UI-CSS#master":
+"semantic-ui-css@npm:^2.5.0":
   version: 2.5.0
-  resolution: "semantic-ui-css@https://github.com/Semantic-Org/Semantic-UI-CSS.git#commit=4049ee43af2613c62252f42b13addd737adf6420"
+  resolution: "semantic-ui-css@npm:2.5.0"
   dependencies:
     jquery: x.*
-  checksum: 010c9f6a4b4bfe55c271fb28ac3e0658ebc110a2676a9a4317923994893b2530c38920206e15fc7f9cdd7ae89db9dadfbf13b0e1c3117d2b821fe0296567307b
+  checksum: f8f9bea6f06f084a9ab0bd0fa46191586a4fc94194f092fbd78deff49ee559257eb3ba9b732916073143fa7816348a7424684a94e60621e889cb184906a750d6
   languageName: node
   linkType: hard
 
@@ -14198,41 +14196,6 @@ __metadata:
   checksum: 11175366ef52de65bf06cefba0ddc9db286dc3a1451fd2989e74c6ea47091a02329a4bf6ce10b1a36950056927b6bbbe47c5ab3a1f4c7032df932d010fbde5a2
   languageName: node
   linkType: hard
-
-"substrate-front-end-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "substrate-front-end-template@workspace:."
-  dependencies:
-    "@polkadot/api": ^10.6.1
-    "@polkadot/extension-dapp": ^0.46.2
-    "@polkadot/keyring": ^12.1.2
-    "@polkadot/networks": ^12.1.2
-    "@polkadot/types": ^10.6.1
-    "@polkadot/ui-keyring": ^3.3.1
-    "@polkadot/ui-settings": ^3.3.1
-    "@polkadot/util": ^12.1.2
-    "@polkadot/util-crypto": ^12.1.2
-    base58: ^2.0.1
-    ed25519: ^0.0.5
-    eslint: ^8.10.0
-    eslint-config-prettier: ^8.4.0
-    eslint-config-react-app: ^7.0.0
-    gh-pages: ^3.2.3
-    node-polyfill-webpack-plugin: ^1.1.4
-    prettier: 2.5.1
-    prop-types: ^15.8.1
-    react: ^17.0.2
-    react-app-rewired: ^2.2.1
-    react-copy-to-clipboard: ^5.0.4
-    react-dom: ^17.0.2
-    react-scripts: ^5.0.0
-    semantic-ui-css: "Semantic-Org/Semantic-UI-CSS#master"
-    semantic-ui-react: ^2.1.2
-    semistandard: ^16.0.1
-    stream-browserify: ^3.0.0
-    three: ^0.165.0
-  languageName: unknown
-  linkType: soft
 
 "sucrase@npm:^3.35.0":
   version: 3.35.1

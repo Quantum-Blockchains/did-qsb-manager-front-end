@@ -1,17 +1,17 @@
 {
-  "name": "substrate-front-end-template",
-  "version": "monthly-2022-01",
+  "name": "qsb-did-manager-frontend",
+  "version": "1.0.0",
   "private": true,
-  "author": "Parity Technologies <admin@parity.io>",
+  "description": "QSB DID Manager frontend for DID and schema operations on Substrate.",
+  "author": "Quantum Blockchains",
   "license": "Unlicense",
-  "homepage": "https://substrate-developer-hub.github.io/substrate-front-end-template",
-  "bugs": {
-    "url": "https://github.com/substrate-developer-hub/substrate-front-end-template/issues"
-  },
+  "homepage": "https://qsb.qbck.io/poseidon",
   "keywords": [
     "substrate",
-    "substrate-ui",
-    "polkadot-js"
+    "polkadot-js",
+    "did",
+    "schema",
+    "qsb"
   ],
   "scripts": {
     "start": "react-app-rewired start",
@@ -35,14 +35,13 @@
     "@polkadot/util": "^12.1.2",
     "@polkadot/util-crypto": "^12.1.2",
     "base58": "^2.0.1",
-    "ed25519": "^0.0.5",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "^17.0.2",
     "react-scripts": "^5.0.0",
-    "semantic-ui-css": "Semantic-Org/Semantic-UI-CSS#master",
+    "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.2",
     "stream-browserify": "^3.0.0",
     "three": "^0.165.0"

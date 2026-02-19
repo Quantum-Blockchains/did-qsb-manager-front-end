@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag release, e.g. v1.2.3"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "16.20.2"
+          cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Print tool versions
+        run: |
+          node -v
+          yarn -v
+
+      - name: Install dependencies
+        run: |
+          for i in 1 2 3; do
+            yarn install --inline-builds && exit 0
+            echo "Install failed (attempt $i/3), retrying in 15s..."
+            sleep 15
+          done
+          echo "Install failed after 3 attempts."
+          exit 1
+
+      - name: Build
+        run: yarn build
+
+      - name: Package static artifact
+        run: |
+          TAG_NAME="${{ inputs.tag || github.ref_name }}"
+          ARTIFACT_NAME="qsb-frontend-${TAG_NAME}.tar.gz"
+          tar -czf "${ARTIFACT_NAME}" build
+          sha256sum "${ARTIFACT_NAME}" > "${ARTIFACT_NAME}.sha256"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: |
+            qsb-frontend-${{ inputs.tag || github.ref_name }}.tar.gz
+            qsb-frontend-${{ inputs.tag || github.ref_name }}.tar.gz.sha256
