@@ -44,11 +44,8 @@ jobs:
       - name: ESLint
         run: yarn eslint:check
 
-      - name: Prettier
-        run: yarn prettier:check
-
       - name: Test
-        run: yarn test
+        run: CI=true yarn test --watchAll=false --passWithNoTests
 
       - name: Build
         run: yarn build

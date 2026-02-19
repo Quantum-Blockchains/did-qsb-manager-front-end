@@ -1,6 +1,6 @@
 {
-  "short_name": "Substrate Front End",
-  "name": "Substrate Front End Template",
+  "short_name": "QSB DID",
+  "name": "QSB DID Manager",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,6 +10,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#0f4ea8",
   "background_color": "#ffffff"
 }
