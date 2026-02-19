@@ -12505,6 +12505,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qsb-did-manager-frontend@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "qsb-did-manager-frontend@workspace:."
+  dependencies:
+    "@polkadot/api": ^10.6.1
+    "@polkadot/extension-dapp": ^0.46.2
+    "@polkadot/keyring": ^12.1.2
+    "@polkadot/networks": ^12.1.2
+    "@polkadot/types": ^10.6.1
+    "@polkadot/ui-keyring": ^3.3.1
+    "@polkadot/ui-settings": ^3.3.1
+    "@polkadot/util": ^12.1.2
+    "@polkadot/util-crypto": ^12.1.2
+    base58: ^2.0.1
+    eslint: ^8.10.0
+    eslint-config-prettier: ^8.4.0
+    eslint-config-react-app: ^7.0.0
+    gh-pages: ^3.2.3
+    node-polyfill-webpack-plugin: ^1.1.4
+    prettier: 2.5.1
+    prop-types: ^15.8.1
+    react: ^17.0.2
+    react-app-rewired: ^2.2.1
+    react-copy-to-clipboard: ^5.0.4
+    react-dom: ^17.0.2
+    react-scripts: ^5.0.0
+    semantic-ui-css: "Semantic-Org/Semantic-UI-CSS#master"
+    semantic-ui-react: ^2.1.2
+    semistandard: ^16.0.1
+    stream-browserify: ^3.0.0
+    three: ^0.165.0
+  languageName: unknown
+  linkType: soft
+
 "querystring-es3@npm:^0.2.1":
   version: 0.2.1
   resolution: "querystring-es3@npm:0.2.1"
@@ -14162,40 +14196,6 @@ __metadata:
   checksum: 11175366ef52de65bf06cefba0ddc9db286dc3a1451fd2989e74c6ea47091a02329a4bf6ce10b1a36950056927b6bbbe47c5ab3a1f4c7032df932d010fbde5a2
   languageName: node
   linkType: hard
-
-"substrate-front-end-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "substrate-front-end-template@workspace:."
-  dependencies:
-    "@polkadot/api": ^10.6.1
-    "@polkadot/extension-dapp": ^0.46.2
-    "@polkadot/keyring": ^12.1.2
-    "@polkadot/networks": ^12.1.2
-    "@polkadot/types": ^10.6.1
-    "@polkadot/ui-keyring": ^3.3.1
-    "@polkadot/ui-settings": ^3.3.1
-    "@polkadot/util": ^12.1.2
-    "@polkadot/util-crypto": ^12.1.2
-    base58: ^2.0.1
-    eslint: ^8.10.0
-    eslint-config-prettier: ^8.4.0
-    eslint-config-react-app: ^7.0.0
-    gh-pages: ^3.2.3
-    node-polyfill-webpack-plugin: ^1.1.4
-    prettier: 2.5.1
-    prop-types: ^15.8.1
-    react: ^17.0.2
-    react-app-rewired: ^2.2.1
-    react-copy-to-clipboard: ^5.0.4
-    react-dom: ^17.0.2
-    react-scripts: ^5.0.0
-    semantic-ui-css: "Semantic-Org/Semantic-UI-CSS#master"
-    semantic-ui-react: ^2.1.2
-    semistandard: ^16.0.1
-    stream-browserify: ^3.0.0
-    three: ^0.165.0
-  languageName: unknown
-  linkType: soft
 
 "sucrase@npm:^3.35.0":
   version: 3.35.1
