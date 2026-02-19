@@ -39,7 +39,14 @@ jobs:
           yarn -v
 
       - name: Install dependencies
-        run: yarn install --immutable --inline-builds
+        run: |
+          for i in 1 2 3; do
+            yarn install --inline-builds && exit 0
+            echo "Install failed (attempt $i/3), retrying in 15s..."
+            sleep 15
+          done
+          echo "Install failed after 3 attempts."
+          exit 1
 
       - name: ESLint
         run: yarn eslint:check
