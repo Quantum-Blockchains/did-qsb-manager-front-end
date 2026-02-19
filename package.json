@@ -1,6 +1,6 @@
 {
   "name": "qsb-did-manager-frontend",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "private": true,
   "description": "QSB DID Manager frontend for DID and schema operations on Substrate.",
   "author": "Quantum Blockchains",
