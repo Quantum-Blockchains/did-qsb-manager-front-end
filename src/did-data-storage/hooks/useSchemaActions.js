@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { base58Decode, base58Encode, blake2AsU8a } from '@polkadot/util-crypto'
 import {
   hexToU8a,
@@ -61,7 +61,7 @@ export default function useSchemaActions({
     }
   }, [addToast, schemaFetchError])
 
-  const decodeHexBytesToText = value => {
+  const decodeHexBytesToText = useCallback(value => {
     if (!value || typeof value !== 'string' || !isHex(value)) {
       return value || ''
     }
@@ -70,7 +70,7 @@ export default function useSchemaActions({
     } catch (error) {
       return value
     }
-  }
+  }, [])
 
   const normalizeSchemaIdInput = rawValue => {
     const trimmed = String(rawValue || '').trim()
@@ -94,7 +94,7 @@ export default function useSchemaActions({
     }
   }
 
-  const normalizeSchemaRecord = (schemaId, recordCodec) => {
+  const normalizeSchemaRecord = useCallback((schemaId, recordCodec) => {
     if (!recordCodec) {
       return null
     }
@@ -116,7 +116,7 @@ export default function useSchemaActions({
       schemaUriHex,
       schemaUriText: decodeHexBytesToText(schemaUriHex),
     }
-  }
+  }, [decodeHexBytesToText])
 
   const buildSchemaId = schemaJson => {
     if (!api?.genesisHash) {
@@ -216,7 +216,15 @@ export default function useSchemaActions({
     return () => {
       cancelled = true
     }
-  }, [activeFeature, api, schemaAction, schemaDidInput, schemaPreviewIdInput])
+  }, [
+    activeFeature,
+    api,
+    normalizeDidInput,
+    normalizeSchemaRecord,
+    schemaAction,
+    schemaDidInput,
+    schemaPreviewIdInput,
+  ])
 
   const ensureSchemaReady = () => {
     if (!api) {
