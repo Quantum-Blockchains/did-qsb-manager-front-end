@@ -1,3 +1,4 @@
 {
-  "PROVIDER_SOCKET": "wss://qsb.qbck.io:9945"
-} 
+  "PROVIDER_SOCKET": "wss://qsb.qbck.io:9945",
+  "APP_URL": "https://qsb.qbck.io/poseidon"
+}
