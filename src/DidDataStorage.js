@@ -17,7 +17,7 @@ import {
 
 import { useSubstrateState } from './substrate-lib'
 import config from './config'
-import buildDidDocument from './did-data-storage/buildDidDocument'
+import buildDidDocument, { buildDidResolutionError } from './did-data-storage/buildDidDocument'
 import {
   DID_ADD_KEY_PREFIX,
   DID_REVOKE_KEY_PREFIX,
@@ -300,9 +300,13 @@ export default function DidDataStorage() {
 
     const normalized = normalizeDidInput(didDetailsInput)
     if (normalized.error) {
-      setDidDetailsError(normalized.error)
-      setDidDetailsDocument(null)
+      setDidDetailsError('')
+      setDidDetailsDocument(buildDidResolutionError('invalidDid'))
       setDidDetailsRaw(null)
+      setDidDetailsStatus('DID resolved with error: invalidDid.')
+      addAuditEntry('warning', 'DID resolve returned invalidDid.', {
+        did: didDetailsInput.trim(),
+      })
       return
     }
 
@@ -317,10 +321,9 @@ export default function DidDataStorage() {
       const response = await provider.send('did_getByString', [normalized.did])
       const rpcResult = response?.result ?? response
       if (!rpcResult) {
-        setDidDetailsDocument(null)
+        setDidDetailsDocument(buildDidResolutionError('notFound'))
         setDidDetailsRaw(null)
-        setDidDetailsStatus('')
-        setDidDetailsError('DID not found.')
+        setDidDetailsStatus('DID resolved with error: notFound.')
         addAuditEntry('warning', 'DID lookup returned no document.', {
           did: normalized.did,
         })
@@ -333,8 +336,9 @@ export default function DidDataStorage() {
         did: normalized.did,
       })
     } catch (error) {
-      setDidDetailsStatus('')
-      setDidDetailsError(`Failed to resolve DID: ${error.message}`)
+      setDidDetailsStatus('DID resolved with error: internalError.')
+      setDidDetailsError('')
+      setDidDetailsDocument(buildDidResolutionError('internalError'))
       addAuditEntry('error', `DID resolve failed: ${error.message}`, {
         did: normalized.did,
       })

@@ -96,7 +96,7 @@ export default function DidDetailsCard(props) {
               primary={didDetailsView === 'didDocument'}
               onClick={() => setDidDetailsView('didDocument')}
             >
-              DID Document
+              DID Resolution Result
             </Button>
             <Button
               basic={didDetailsView !== 'raw'}

@@ -64,24 +64,23 @@ export default function buildDidDocument(didValue, chainData) {
       type: 'Multikey',
       controller,
       publicKeyMultibase: toPublicKeyMultibase(key),
-      roles: key.roles || [],
     }
   })
 
   const authentication = verificationMethod
-    .filter(method => (method.roles || []).includes('Authentication'))
+    .filter((method, index) => (activeKeys[index]?.roles || []).includes('Authentication'))
     .map(method => method.id)
   const assertionMethod = verificationMethod
-    .filter(method => (method.roles || []).includes('AssertionMethod'))
+    .filter((method, index) => (activeKeys[index]?.roles || []).includes('AssertionMethod'))
     .map(method => method.id)
   const keyAgreement = verificationMethod
-    .filter(method => (method.roles || []).includes('KeyAgreement'))
+    .filter((method, index) => (activeKeys[index]?.roles || []).includes('KeyAgreement'))
     .map(method => method.id)
   const capabilityInvocation = verificationMethod
-    .filter(method => (method.roles || []).includes('CapabilityInvocation'))
+    .filter((method, index) => (activeKeys[index]?.roles || []).includes('CapabilityInvocation'))
     .map(method => method.id)
   const capabilityDelegation = verificationMethod
-    .filter(method => (method.roles || []).includes('CapabilityDelegation'))
+    .filter((method, index) => (activeKeys[index]?.roles || []).includes('CapabilityDelegation'))
     .map(method => method.id)
 
   const normalizedServices = services.map(service => {
@@ -96,28 +95,42 @@ export default function buildDidDocument(didValue, chainData) {
     }
   })
 
-  const normalizedMetadata = Array.isArray(chainData.metadata)
-    ? chainData.metadata.map(entry => ({
-        key: bytesToString(entry.key),
-        value: bytesToString(entry.value),
-      }))
-    : []
-
   return {
-    '@context': [
-      'https://www.w3.org/ns/did/v1',
-      'https://w3id.org/security/multikey/v1',
-    ],
-    id: didValue,
-    version: chainData.version ?? null,
-    deactivated: chainData.deactivated ?? false,
-    verificationMethod,
-    authentication,
-    assertionMethod,
-    keyAgreement,
-    capabilityInvocation,
-    capabilityDelegation,
-    service: normalizedServices,
-    metadata: normalizedMetadata,
+    didDocument: {
+      '@context': [
+        'https://www.w3.org/ns/did/v1',
+        'https://w3id.org/security/multikey/v1',
+      ],
+      id: didValue,
+      verificationMethod,
+      authentication,
+      assertionMethod,
+      keyAgreement,
+      capabilityInvocation,
+      capabilityDelegation,
+      service: normalizedServices,
+    },
+    didDocumentMetadata: {
+      deactivated: chainData.deactivated ?? false,
+      versionId: chainData.version ?? 0,
+    },
+    didResolutionMetadata: {
+      contentType: 'application/did+ld+json',
+      error: null,
+    },
+  }
+}
+
+export function buildDidResolutionError(errorCode) {
+  return {
+    didDocument: null,
+    didDocumentMetadata: {
+      deactivated: false,
+      versionId: 0,
+    },
+    didResolutionMetadata: {
+      contentType: null,
+      error: errorCode,
+    },
   }
 }
