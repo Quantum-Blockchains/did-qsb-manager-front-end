@@ -21,17 +21,14 @@ export default function buildDidDocument(didValue, chainData) {
   const encodeUvarint = value => {
     const out = []
     let current = Number(value || 0)
-    while (true) {
+    do {
       let byte = current & 0x7f
       current >>= 7
       if (current !== 0) {
         byte |= 0x80
       }
       out.push(byte)
-      if (current === 0) {
-        break
-      }
-    }
+    } while (current !== 0)
     return Uint8Array.from(out)
   }
 
