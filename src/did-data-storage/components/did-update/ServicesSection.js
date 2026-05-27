@@ -4,7 +4,6 @@ import { Button, Form, Header, Input, Message, Modal, Segment } from 'semantic-u
 export default function ServicesSection(props) {
   const {
     services,
-    didUpdateInput,
     isUpdatingDid,
     serviceIdInput,
     serviceTypeInput,
@@ -42,7 +41,6 @@ export default function ServicesSection(props) {
             const serviceIdText = formatBytesText(service.id)
             const serviceTypeText = formatBytesText(service.service_type)
             const endpointText = formatBytesText(service.endpoint)
-            const ownerDid = didUpdateInput.trim()
             const serviceName = serviceIdText || serviceIdHex || '—'
 
             return (
@@ -65,8 +63,8 @@ export default function ServicesSection(props) {
                 <div style={{ flex: 1 }}>
                   <div style={{ wordBreak: 'break-word' }}>
                     <strong>Name:</strong>{' '}
-                    <span title={`${ownerDid}#${serviceName}`}>
-                      {compactValue(`${ownerDid}#${serviceName}`, 28, 18)}
+                    <span title={serviceName}>
+                      {compactValue(serviceName, 28, 18)}
                     </span>
                   </div>
                   <div style={{ wordBreak: 'break-word' }}>

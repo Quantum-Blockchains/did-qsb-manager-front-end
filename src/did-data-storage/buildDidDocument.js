@@ -1,4 +1,3 @@
-import { base58Encode } from '@polkadot/util-crypto'
 import { u8aToHex, u8aToString } from '@polkadot/util'
 
 const bytesToString = value => {
@@ -17,17 +16,57 @@ export default function buildDidDocument(didValue, chainData) {
 
   const keys = Array.isArray(chainData.keys) ? chainData.keys : []
   const services = Array.isArray(chainData.services) ? chainData.services : []
+  const activeKeys = keys.filter(key => !key?.revoked)
 
-  const verificationMethod = keys.map((key, index) => {
-    const material = Uint8Array.from(key.public_key || [])
-    const methodId = `${didValue}#keys-${index + 1}`
+  const encodeUvarint = value => {
+    const out = []
+    let current = Number(value || 0)
+    while (true) {
+      let byte = current & 0x7f
+      current >>= 7
+      if (current !== 0) {
+        byte |= 0x80
+      }
+      out.push(byte)
+      if (current === 0) {
+        break
+      }
+    }
+    return Uint8Array.from(out)
+  }
+
+  const bytesToBase64Url = bytes => {
+    if (!bytes?.length) return null
+    let binary = ''
+    bytes.forEach(byte => {
+      binary += String.fromCharCode(byte)
+    })
+    const base64 = btoa(binary)
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+  }
+
+  const toPublicKeyMultibase = key => {
+    const raw = Uint8Array.from(key?.public_key || [])
+    const codec = key?.multicodec
+    if (!Number.isInteger(codec) || raw.length === 0) {
+      return null
+    }
+    const prefixed = new Uint8Array(encodeUvarint(codec).length + raw.length)
+    prefixed.set(encodeUvarint(codec), 0)
+    prefixed.set(raw, encodeUvarint(codec).length)
+    const encoded = bytesToBase64Url(prefixed)
+    return encoded ? `u${encoded}` : null
+  }
+
+  const verificationMethod = activeKeys.map(key => {
+    const keyId = bytesToString(key.key_id)
+    const controller = bytesToString(key.controller) || didValue
 
     return {
-      id: methodId,
-      type: 'ML-DSA-44',
-      controller: didValue,
-      publicKeyMultibase: `z${base58Encode(material)}`,
-      revoked: key.revoked || false,
+      id: keyId || `${didValue}#update`,
+      type: 'Multikey',
+      controller,
+      publicKeyMultibase: toPublicKeyMultibase(key),
       roles: key.roles || [],
     }
   })
@@ -49,12 +88,12 @@ export default function buildDidDocument(didValue, chainData) {
     .map(method => method.id)
 
   const normalizedServices = services.map(service => {
-    const name = bytesToString(service.id)
+    const id = bytesToString(service.id)
     const type = bytesToString(service.service_type || service.serviceType)
     const endpoint = bytesToString(service.endpoint)
 
     return {
-      id: name ? `${didValue}#${name}` : `${didValue}#service`,
+      id: id || '#service',
       type,
       serviceEndpoint: endpoint,
     }
@@ -68,7 +107,10 @@ export default function buildDidDocument(didValue, chainData) {
     : []
 
   return {
-    '@context': ['https://www.w3.org/ns/did/v1'],
+    '@context': [
+      'https://www.w3.org/ns/did/v1',
+      'https://w3id.org/security/multikey/v1',
+    ],
     id: didValue,
     version: chainData.version ?? null,
     deactivated: chainData.deactivated ?? false,

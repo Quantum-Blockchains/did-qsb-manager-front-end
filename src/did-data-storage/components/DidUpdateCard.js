@@ -15,11 +15,13 @@ export default function DidUpdateCard(props) {
     didUpdateChainData,
     isUpdatingDid,
     addKeyPublicKey,
+    addKeyIdSuffix,
+    addKeyController,
     addKeyRoles,
     isAddKeyModalOpen,
     isKeyPreviewModalOpen,
     selectedKeyPreview,
-    updateRolesPublicKey,
+    updateRolesKeyId,
     updateRolesValues,
     isUpdateRolesModalOpen,
     serviceIdInput,
@@ -33,11 +35,13 @@ export default function DidUpdateCard(props) {
     setDidUpdateInput,
     setDidOptions,
     setAddKeyPublicKey,
+    setAddKeyIdSuffix,
+    setAddKeyController,
     setAddKeyRoles,
     setIsAddKeyModalOpen,
     setIsKeyPreviewModalOpen,
     setSelectedKeyPreview,
-    setUpdateRolesPublicKey,
+    setUpdateRolesKeyId,
     setUpdateRolesValues,
     setIsUpdateRolesModalOpen,
     setServiceIdInput,
@@ -151,19 +155,23 @@ export default function DidUpdateCard(props) {
             keys={keys}
             isUpdatingDid={isUpdatingDid}
             addKeyPublicKey={addKeyPublicKey}
+            addKeyIdSuffix={addKeyIdSuffix}
+            addKeyController={addKeyController}
             addKeyRoles={addKeyRoles}
             isAddKeyModalOpen={isAddKeyModalOpen}
             isKeyPreviewModalOpen={isKeyPreviewModalOpen}
             selectedKeyPreview={selectedKeyPreview}
-            updateRolesPublicKey={updateRolesPublicKey}
+            updateRolesKeyId={updateRolesKeyId}
             updateRolesValues={updateRolesValues}
             isUpdateRolesModalOpen={isUpdateRolesModalOpen}
             setAddKeyPublicKey={setAddKeyPublicKey}
+            setAddKeyIdSuffix={setAddKeyIdSuffix}
+            setAddKeyController={setAddKeyController}
             setAddKeyRoles={setAddKeyRoles}
             setIsAddKeyModalOpen={setIsAddKeyModalOpen}
             setIsKeyPreviewModalOpen={setIsKeyPreviewModalOpen}
             setSelectedKeyPreview={setSelectedKeyPreview}
-            setUpdateRolesPublicKey={setUpdateRolesPublicKey}
+            setUpdateRolesKeyId={setUpdateRolesKeyId}
             setUpdateRolesValues={setUpdateRolesValues}
             setIsUpdateRolesModalOpen={setIsUpdateRolesModalOpen}
             clearDidUpdateMessages={clearDidUpdateMessages}
@@ -175,6 +183,7 @@ export default function DidUpdateCard(props) {
             compactRawForDisplay={compactRawForDisplay}
             compactValue={compactValue}
             formatBytesHex={formatBytesHex}
+            formatBytesText={formatBytesText}
             normalizeRoles={normalizeRoles}
           />
         )}
@@ -182,7 +191,6 @@ export default function DidUpdateCard(props) {
         {didUpdateSection === 'Services' && (
           <ServicesSection
             services={services}
-            didUpdateInput={didUpdateInput}
             isUpdatingDid={isUpdatingDid}
             serviceIdInput={serviceIdInput}
             serviceTypeInput={serviceTypeInput}

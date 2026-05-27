@@ -46,11 +46,13 @@ export default function DidDataStorage() {
   const [isResolvingDid, setIsResolvingDid] = useState(false)
   const [didUpdateInput, setDidUpdateInput] = useState('')
   const [addKeyPublicKey, setAddKeyPublicKey] = useState('')
+  const [addKeyIdSuffix, setAddKeyIdSuffix] = useState('')
+  const [addKeyController, setAddKeyController] = useState('')
   const [addKeyRoles, setAddKeyRoles] = useState([])
   const [isAddKeyModalOpen, setIsAddKeyModalOpen] = useState(false)
   const [isKeyPreviewModalOpen, setIsKeyPreviewModalOpen] = useState(false)
   const [selectedKeyPreview, setSelectedKeyPreview] = useState(null)
-  const [updateRolesPublicKey, setUpdateRolesPublicKey] = useState('')
+  const [updateRolesKeyId, setUpdateRolesKeyId] = useState('')
   const [updateRolesValues, setUpdateRolesValues] = useState([])
   const [isUpdateRolesModalOpen, setIsUpdateRolesModalOpen] = useState(false)
   const [serviceIdInput, setServiceIdInput] = useState('')
@@ -398,6 +400,14 @@ export default function DidDataStorage() {
     }
     if (isHex(trimmed)) {
       return trimmed
+    }
+    return stringToHex(trimmed)
+  }
+
+  const toDidUrlBytes = value => {
+    const trimmed = String(value || '').trim()
+    if (!trimmed) {
+      return null
     }
     return stringToHex(trimmed)
   }
@@ -866,27 +876,48 @@ export default function DidDataStorage() {
       setDidUpdateError('Enter a public key to add.')
       return false
     }
+    if (!String(addKeyPublicKey || '').trim().startsWith('u')) {
+      setDidUpdateError('Public key must be Multikey (start with "u").')
+      return false
+    }
 
     if (!addKeyRoles.length) {
       setDidUpdateError('Select at least one role.')
       return false
     }
 
+    const keyIdSuffixRaw = String(addKeyIdSuffix || '').trim()
+    const keyIdSuffix = keyIdSuffixRaw ? toU8aInput(keyIdSuffixRaw) : null
+    if (keyIdSuffixRaw && !keyIdSuffix) {
+      setDidUpdateError('Invalid key id suffix.')
+      return false
+    }
+
+    const controllerRaw = String(addKeyController || '').trim()
+    const controllerNormalized = controllerRaw
+      ? normalizeDidInput(controllerRaw.startsWith('did:') ? controllerRaw : `did:qsb:${controllerRaw}`)
+      : null
+    if (controllerRaw && controllerNormalized?.error) {
+      setDidUpdateError(`Invalid controller DID: ${controllerNormalized.error}`)
+      return false
+    }
+    const controller = controllerRaw ? toU8aInput(controllerNormalized.did) : null
+
     const payload = buildDidPayload(
       DID_ADD_KEY_PREFIX,
-      api.tx.did.addKey(didValue, publicKey, addKeyRoles, '0x')
+      api.tx.did.addKey(didValue, keyIdSuffix, publicKey, addKeyRoles, controller, '0x')
     )
     const didSignature = await requestDidSignature(didValue, payload)
 
     await submitTx(
-      api.tx.did.addKey(didValue, publicKey, addKeyRoles, didSignature),
+      api.tx.did.addKey(didValue, keyIdSuffix, publicKey, addKeyRoles, controller, didSignature),
       'Adding key...',
       null
     )
     return true
   }
 
-  const submitRevokeKeyValue = async publicKeyValue => {
+  const submitRevokeKeyValue = async keyIdValue => {
     if (!ensureApiReady()) {
       return
     }
@@ -896,20 +927,20 @@ export default function DidDataStorage() {
       return
     }
 
-    const publicKey = toU8aInput(publicKeyValue)
-    if (!publicKey) {
-      setDidUpdateError('Enter a public key to revoke.')
+    const keyId = toDidUrlBytes(keyIdValue)
+    if (!keyId) {
+      setDidUpdateError('Enter a key id to revoke.')
       return
     }
 
     const payload = buildDidPayload(
       DID_REVOKE_KEY_PREFIX,
-      api.tx.did.revokeKey(didValue, publicKey, '0x')
+      api.tx.did.revokeKey(didValue, keyId, '0x')
     )
     const didSignature = await requestDidSignature(didValue, payload)
 
     await submitTx(
-      api.tx.did.revokeKey(didValue, publicKey, didSignature),
+      api.tx.did.revokeKey(didValue, keyId, didSignature),
       'Revoking key...',
       null
     )
@@ -1091,9 +1122,9 @@ export default function DidDataStorage() {
       return false
     }
 
-    const publicKey = toU8aInput(updateRolesPublicKey)
-    if (!publicKey) {
-      setDidUpdateError('Enter a public key.')
+    const keyId = toDidUrlBytes(updateRolesKeyId)
+    if (!keyId) {
+      setDidUpdateError('Enter key id.')
       return false
     }
 
@@ -1101,7 +1132,7 @@ export default function DidDataStorage() {
       ? didUpdateChainData.keys
       : []
     const matchedKey = knownKeys.find(
-      key => formatBytesHex(key.public_key) === publicKey
+      key => formatBytesText(key.key_id) === String(updateRolesKeyId || '').trim()
     )
     if (matchedKey?.revoked) {
       setDidUpdateError('Revoked key cannot be updated.')
@@ -1115,14 +1146,14 @@ export default function DidDataStorage() {
 
     const payload = buildDidPayload(
       DID_UPDATE_ROLES_PREFIX,
-      api.tx.did.updateRoles(didValue, publicKey, updateRolesValues, '0x')
+      api.tx.did.updateRoles(didValue, keyId, updateRolesValues, '0x')
     )
     const didSignature = await requestDidSignature(didValue, payload)
 
     await submitTx(
       api.tx.did.updateRoles(
         didValue,
-        publicKey,
+        keyId,
         updateRolesValues,
         didSignature
       ),
@@ -1142,11 +1173,13 @@ export default function DidDataStorage() {
       didUpdateChainData={didUpdateChainData}
       isUpdatingDid={isUpdatingDid}
       addKeyPublicKey={addKeyPublicKey}
+      addKeyIdSuffix={addKeyIdSuffix}
+      addKeyController={addKeyController}
       addKeyRoles={addKeyRoles}
       isAddKeyModalOpen={isAddKeyModalOpen}
       isKeyPreviewModalOpen={isKeyPreviewModalOpen}
       selectedKeyPreview={selectedKeyPreview}
-      updateRolesPublicKey={updateRolesPublicKey}
+      updateRolesKeyId={updateRolesKeyId}
       updateRolesValues={updateRolesValues}
       isUpdateRolesModalOpen={isUpdateRolesModalOpen}
       serviceIdInput={serviceIdInput}
@@ -1160,11 +1193,13 @@ export default function DidDataStorage() {
       setDidUpdateInput={setDidUpdateInput}
       setDidOptions={setDidOptions}
       setAddKeyPublicKey={setAddKeyPublicKey}
+      setAddKeyIdSuffix={setAddKeyIdSuffix}
+      setAddKeyController={setAddKeyController}
       setAddKeyRoles={setAddKeyRoles}
       setIsAddKeyModalOpen={setIsAddKeyModalOpen}
       setIsKeyPreviewModalOpen={setIsKeyPreviewModalOpen}
       setSelectedKeyPreview={setSelectedKeyPreview}
-      setUpdateRolesPublicKey={setUpdateRolesPublicKey}
+      setUpdateRolesKeyId={setUpdateRolesKeyId}
       setUpdateRolesValues={setUpdateRolesValues}
       setIsUpdateRolesModalOpen={setIsUpdateRolesModalOpen}
       setServiceIdInput={setServiceIdInput}

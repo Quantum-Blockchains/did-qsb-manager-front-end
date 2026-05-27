@@ -7,19 +7,23 @@ export default function KeysSection(props) {
     keys,
     isUpdatingDid,
     addKeyPublicKey,
+    addKeyIdSuffix,
+    addKeyController,
     addKeyRoles,
     isAddKeyModalOpen,
     isKeyPreviewModalOpen,
     selectedKeyPreview,
-    updateRolesPublicKey,
+    updateRolesKeyId,
     updateRolesValues,
     isUpdateRolesModalOpen,
     setAddKeyPublicKey,
+    setAddKeyIdSuffix,
+    setAddKeyController,
     setAddKeyRoles,
     setIsAddKeyModalOpen,
     setIsKeyPreviewModalOpen,
     setSelectedKeyPreview,
-    setUpdateRolesPublicKey,
+    setUpdateRolesKeyId,
     setUpdateRolesValues,
     setIsUpdateRolesModalOpen,
     clearDidUpdateMessages,
@@ -31,6 +35,7 @@ export default function KeysSection(props) {
     compactRawForDisplay,
     compactValue,
     formatBytesHex,
+    formatBytesText,
     normalizeRoles,
   } = props
 
@@ -42,12 +47,23 @@ export default function KeysSection(props) {
       ) : (
         keys.map((key, index) => {
           const publicKeyHex = formatBytesHex(key.public_key)
+          const keyIdText = formatBytesText(key.key_id)
           const roles = normalizeRoles(key.roles)
           const isRevoked = Boolean(key.revoked)
 
           return (
             <Segment key={`${publicKeyHex}-${index}`}>
               <Header as="h5">Key {index + 1}</Header>
+              <div className="key-detail-row">
+                <span className="key-detail-label">Key ID:</span>
+                <span className="key-detail-value" title={keyIdText}>
+                  {keyIdText ? (
+                    <span className="compact-inline-value">{compactValue(keyIdText)}</span>
+                  ) : (
+                    '—'
+                  )}
+                </span>
+              </div>
               <div className="key-detail-row">
                 <span className="key-detail-label">Public key:</span>
                 <span className="key-detail-value" title={publicKeyHex}>
@@ -89,6 +105,7 @@ export default function KeysSection(props) {
                   onClick={() => {
                     setSelectedKeyPreview({
                       index: index + 1,
+                      keyIdText,
                       publicKeyHex,
                       roles,
                       isRevoked,
@@ -105,7 +122,7 @@ export default function KeysSection(props) {
                   negative
                   type="button"
                   className="key-action-button key-action-danger"
-                  onClick={() => submitRevokeKeyValue(publicKeyHex)}
+                  onClick={() => submitRevokeKeyValue(keyIdText)}
                   loading={isUpdatingDid}
                   disabled={isUpdatingDid || isRevoked}
                   style={{ marginTop: '.5em' }}
@@ -116,7 +133,7 @@ export default function KeysSection(props) {
                   type="button"
                   className="key-action-button key-action-secondary"
                   onClick={() => {
-                    setUpdateRolesPublicKey(publicKeyHex)
+                    setUpdateRolesKeyId(keyIdText)
                     setUpdateRolesValues(roles)
                     setIsUpdateRolesModalOpen(true)
                     clearDidUpdateMessages()
@@ -144,6 +161,14 @@ export default function KeysSection(props) {
           {selectedKeyPreview?.index ? ` #${selectedKeyPreview.index}` : ''}
         </Modal.Header>
         <Modal.Content scrolling>
+          <div className="key-detail-row">
+            <span className="key-detail-label">Key ID:</span>
+            <span className="key-detail-value">
+              <div className="modal-key-value" title={selectedKeyPreview?.keyIdText || ''}>
+                {selectedKeyPreview?.keyIdText || '—'}
+              </div>
+            </span>
+          </div>
           <div className="key-detail-row">
             <span className="key-detail-label">Public key:</span>
             <span className="key-detail-value">
@@ -204,9 +229,9 @@ export default function KeysSection(props) {
         <Modal.Content>
           <Form>
             <Form.Field>
-              <label>Public key</label>
-              <div className="modal-key-value" title={updateRolesPublicKey}>
-                {compactValue(updateRolesPublicKey, 36, 20)}
+              <label>Key ID</label>
+              <div className="modal-key-value" title={updateRolesKeyId}>
+                {compactValue(updateRolesKeyId, 36, 20)}
               </div>
             </Form.Field>
             <Form.Field>
@@ -253,6 +278,8 @@ export default function KeysSection(props) {
         type="button"
         onClick={() => {
           setAddKeyPublicKey('')
+          setAddKeyIdSuffix('')
+          setAddKeyController('')
           setAddKeyRoles([])
           setIsAddKeyModalOpen(true)
           clearDidUpdateMessages()
@@ -275,10 +302,34 @@ export default function KeysSection(props) {
               <label>Public key</label>
               <Input
                 fluid
-                placeholder="0x... or text"
+                placeholder="Multikey (u...)"
                 value={addKeyPublicKey}
                 onChange={(_, changed) => {
                   setAddKeyPublicKey(changed.value)
+                  clearDidUpdateMessages()
+                }}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Key ID suffix (optional)</label>
+              <Input
+                fluid
+                placeholder="#key-1 or key-1"
+                value={addKeyIdSuffix}
+                onChange={(_, changed) => {
+                  setAddKeyIdSuffix(changed.value)
+                  clearDidUpdateMessages()
+                }}
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Controller DID (optional)</label>
+              <Input
+                fluid
+                placeholder="did:qsb:..."
+                value={addKeyController}
+                onChange={(_, changed) => {
+                  setAddKeyController(changed.value)
                   clearDidUpdateMessages()
                 }}
               />
