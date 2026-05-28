@@ -126,13 +126,16 @@ export default function ServicesSection(props) {
               <label>Name</label>
               <Input
                 fluid
-                placeholder="Name"
+                placeholder="name | #name | did:qsb:<id>#name"
                 value={serviceIdInput}
                 onChange={(_, changed) => {
                   setServiceIdInput(changed.value)
                   clearDidUpdateMessages()
                 }}
               />
+              <div style={{ marginTop: '.35rem', color: '#6b7280', fontSize: '.85rem' }}>
+                If you enter only name, it will be saved as <code>did:qsb:&lt;current-did&gt;#name</code>.
+              </div>
             </Form.Field>
             <Form.Field>
               <label>Type</label>
