@@ -408,6 +408,30 @@ export default function DidDataStorage() {
     return stringToHex(trimmed)
   }
 
+  const normalizeServiceIdInput = (value, did) => {
+    const trimmed = String(value || '').trim()
+    if (!trimmed) {
+      return null
+    }
+
+    if (isHex(trimmed)) {
+      return trimmed
+    }
+
+    if (trimmed.startsWith('did:qsb:') || trimmed.startsWith('did:qbs:')) {
+      const normalized = trimmed.startsWith('did:qbs:')
+        ? trimmed.replace('did:qbs:', 'did:qsb:')
+        : trimmed
+      return stringToHex(normalized)
+    }
+
+    if (trimmed.startsWith('#')) {
+      return stringToHex(`${did}${trimmed}`)
+    }
+
+    return stringToHex(`${did}#${trimmed}`)
+  }
+
   const toDidUrlBytes = value => {
     const trimmed = String(value || '').trim()
     if (!trimmed) {
@@ -983,7 +1007,7 @@ export default function DidDataStorage() {
       return false
     }
 
-    const serviceId = toU8aInput(serviceIdInput)
+    const serviceId = normalizeServiceIdInput(serviceIdInput, didValue)
     if (!serviceId) {
       setDidUpdateError('Enter a service id.')
       return false
