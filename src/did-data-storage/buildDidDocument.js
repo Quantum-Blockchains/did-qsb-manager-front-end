@@ -16,6 +16,7 @@ export default function buildDidDocument(didValue, chainData) {
 
   const keys = Array.isArray(chainData.keys) ? chainData.keys : []
   const services = Array.isArray(chainData.services) ? chainData.services : []
+  const metadataEntries = Array.isArray(chainData.metadata) ? chainData.metadata : []
   const activeKeys = keys.filter(key => !key?.revoked)
 
   const encodeUvarint = value => {
@@ -95,6 +96,17 @@ export default function buildDidDocument(didValue, chainData) {
     }
   })
 
+  const userMetadata = metadataEntries.reduce((acc, entry) => {
+    const rawKey = bytesToString(entry?.key).trim()
+    if (!rawKey) {
+      return acc
+    }
+
+    const metadataKey = rawKey.includes(':') ? rawKey : `qsb:${rawKey}`
+    acc[metadataKey] = bytesToString(entry?.value)
+    return acc
+  }, {})
+
   return {
     didDocument: {
       '@context': [
@@ -113,6 +125,7 @@ export default function buildDidDocument(didValue, chainData) {
     didDocumentMetadata: {
       deactivated: chainData.deactivated ?? false,
       versionId: chainData.version ?? 0,
+      ...userMetadata,
     },
     didResolutionMetadata: {
       contentType: 'application/did+ld+json',
