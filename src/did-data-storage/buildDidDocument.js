@@ -86,8 +86,8 @@ export default function buildDidDocument(didValue, chainData) {
 
   const normalizedServices = services.map(service => {
     const id = bytesToString(service.id)
-    const type = bytesToString(service.service_type || service.serviceType)
-    const endpoint = bytesToString(service.endpoint)
+    const type = bytesToString(service.type || service.service_type || service.serviceType)
+    const endpoint = bytesToString(service.serviceEndpoint || service.endpoint)
 
     return {
       id: id || '#service',
