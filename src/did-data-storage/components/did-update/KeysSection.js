@@ -1,11 +1,12 @@
 import React from 'react'
-import { Button, Form, Header, Input, Message, Modal, Segment } from 'semantic-ui-react'
+import { Button, Form, Header, Input, Message, Modal, Segment, TextArea } from 'semantic-ui-react'
 import { ROLE_OPTIONS } from '../../constants'
 
 export default function KeysSection(props) {
   const {
     keys,
     isUpdatingDid,
+    addKeyMaterialType,
     addKeyPublicKey,
     addKeyIdSuffix,
     addKeyController,
@@ -16,6 +17,7 @@ export default function KeysSection(props) {
     updateRolesKeyId,
     updateRolesValues,
     isUpdateRolesModalOpen,
+    setAddKeyMaterialType,
     setAddKeyPublicKey,
     setAddKeyIdSuffix,
     setAddKeyController,
@@ -34,9 +36,10 @@ export default function KeysSection(props) {
     toggleAddKeyRole,
     compactRawForDisplay,
     compactValue,
-    formatBytesHex,
     formatBytesText,
     normalizeRoles,
+    getKeyMaterialType,
+    getKeyMaterialHex,
   } = props
 
   return (
@@ -46,14 +49,21 @@ export default function KeysSection(props) {
         <Message size="small" info content="No keys found for this DID." />
       ) : (
         keys.map((key, index) => {
-          const publicKeyHex = formatBytesHex(key.public_key)
+          const keyMaterialType = getKeyMaterialType(key)
+          const keyMaterialHex = getKeyMaterialHex(key)
           const keyIdText = formatBytesText(key.key_id)
           const roles = normalizeRoles(key.roles)
           const isRevoked = Boolean(key.revoked)
 
           return (
-            <Segment key={`${publicKeyHex}-${index}`}>
+            <Segment key={`${keyMaterialHex}-${index}`}>
               <Header as="h5">Key {index + 1}</Header>
+              <div className="key-detail-row">
+                <span className="key-detail-label">Material:</span>
+                <span className="key-detail-value">
+                  <span className="key-role-chip">{keyMaterialType}</span>
+                </span>
+              </div>
               <div className="key-detail-row">
                 <span className="key-detail-label">Key ID:</span>
                 <span className="key-detail-value" title={keyIdText}>
@@ -65,10 +75,12 @@ export default function KeysSection(props) {
                 </span>
               </div>
               <div className="key-detail-row">
-                <span className="key-detail-label">Public key:</span>
-                <span className="key-detail-value" title={publicKeyHex}>
-                  {publicKeyHex ? (
-                    <span className="compact-inline-value">{compactValue(publicKeyHex)}</span>
+                <span className="key-detail-label">
+                  {keyMaterialType === 'Jwk' ? 'JWK bytes:' : 'Public key:'}
+                </span>
+                <span className="key-detail-value" title={keyMaterialHex}>
+                  {keyMaterialHex ? (
+                    <span className="compact-inline-value">{compactValue(keyMaterialHex)}</span>
                   ) : (
                     '—'
                   )}
@@ -80,7 +92,7 @@ export default function KeysSection(props) {
                   {roles.length ? (
                     <span className="key-role-list">
                       {roles.map(role => (
-                        <span key={`${publicKeyHex}-${role}`} className="key-role-chip">
+                        <span key={`${keyMaterialHex}-${role}`} className="key-role-chip">
                           {role}
                         </span>
                       ))}
@@ -105,8 +117,9 @@ export default function KeysSection(props) {
                   onClick={() => {
                     setSelectedKeyPreview({
                       index: index + 1,
+                      keyMaterialType,
                       keyIdText,
-                      publicKeyHex,
+                      publicKeyHex: keyMaterialHex,
                       roles,
                       isRevoked,
                       rawKey: compactRawForDisplay(key),
@@ -170,7 +183,9 @@ export default function KeysSection(props) {
             </span>
           </div>
           <div className="key-detail-row">
-            <span className="key-detail-label">Public key:</span>
+            <span className="key-detail-label">
+              {selectedKeyPreview?.keyMaterialType === 'Jwk' ? 'JWK bytes:' : 'Public key:'}
+            </span>
             <span className="key-detail-value">
               <div className="modal-key-value" title={selectedKeyPreview?.publicKeyHex || ''}>
                 {selectedKeyPreview?.publicKeyHex || '—'}
@@ -277,6 +292,7 @@ export default function KeysSection(props) {
         primary
         type="button"
         onClick={() => {
+          setAddKeyMaterialType('Multikey')
           setAddKeyPublicKey('')
           setAddKeyIdSuffix('')
           setAddKeyController('')
@@ -299,16 +315,56 @@ export default function KeysSection(props) {
         <Modal.Content>
           <Form>
             <Form.Field>
-              <label>Public key</label>
-              <Input
-                fluid
-                placeholder="Multikey (u...)"
-                value={addKeyPublicKey}
-                onChange={(_, changed) => {
-                  setAddKeyPublicKey(changed.value)
-                  clearDidUpdateMessages()
-                }}
-              />
+              <label>Key material</label>
+              <Button.Group size="small" className="key-material-toggle">
+                <Button
+                  type="button"
+                  active={addKeyMaterialType === 'Multikey'}
+                  onClick={() => {
+                    setAddKeyMaterialType('Multikey')
+                    clearDidUpdateMessages()
+                  }}
+                >
+                  Multikey
+                </Button>
+                <Button
+                  type="button"
+                  active={addKeyMaterialType === 'Jwk'}
+                  onClick={() => {
+                    setAddKeyMaterialType('Jwk')
+                    setAddKeyRoles(prev => prev.filter(role => role !== 'CapabilityInvocation'))
+                    clearDidUpdateMessages()
+                  }}
+                >
+                  JWK
+                </Button>
+              </Button.Group>
+              {addKeyMaterialType === 'Jwk' ? (
+                <TextArea
+                  rows={6}
+                  placeholder='{"kty":"OKP","crv":"Ed25519","x":"..."}'
+                  value={addKeyPublicKey}
+                  onChange={(_, changed) => {
+                    setAddKeyPublicKey(changed.value)
+                    clearDidUpdateMessages()
+                  }}
+                />
+              ) : (
+                <Input
+                  fluid
+                  placeholder="Multikey (u...)"
+                  value={addKeyPublicKey}
+                  onChange={(_, changed) => {
+                    setAddKeyPublicKey(changed.value)
+                    clearDidUpdateMessages()
+                  }}
+                />
+              )}
+              <div className="role-chip-hint">
+                {addKeyMaterialType === 'Jwk'
+                  ? 'JWK must be a JSON object. CapabilityInvocation is disabled for JWK.'
+                  : 'Multikey must start with u and contain a valid multicodec-prefixed public key.'}
+              </div>
             </Form.Field>
             <Form.Field>
               <label>Key ID suffix (optional)</label>
@@ -342,6 +398,7 @@ export default function KeysSection(props) {
                     key={`add-${role.value}`}
                     type="button"
                     className={`role-chip${addKeyRoles.includes(role.value) ? ' active' : ''}`}
+                    disabled={addKeyMaterialType === 'Jwk' && role.value === 'CapabilityInvocation'}
                     onClick={() => toggleAddKeyRole(role.value)}
                   >
                     {role.text}

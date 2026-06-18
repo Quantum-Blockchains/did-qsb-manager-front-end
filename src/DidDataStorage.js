@@ -45,6 +45,7 @@ export default function DidDataStorage() {
   const [didDetailsView, setDidDetailsView] = useState('didDocument')
   const [isResolvingDid, setIsResolvingDid] = useState(false)
   const [didUpdateInput, setDidUpdateInput] = useState('')
+  const [addKeyMaterialType, setAddKeyMaterialType] = useState('Multikey')
   const [addKeyPublicKey, setAddKeyPublicKey] = useState('')
   const [addKeyIdSuffix, setAddKeyIdSuffix] = useState('')
   const [addKeyController, setAddKeyController] = useState('')
@@ -70,6 +71,8 @@ export default function DidDataStorage() {
   const [didOptions, setDidOptions] = useState([])
   const [didOptionsError, setDidOptionsError] = useState('')
   const [isLoadingDids, setIsLoadingDids] = useState(false)
+  const [walletStatus, setWalletStatus] = useState('unknown')
+  const [walletError, setWalletError] = useState('')
   const [didUpdateSection, setDidUpdateSection] = useState('Keys')
   const [didUpdateChainData, setDidUpdateChainData] = useState(null)
   const [didUpdateLoadError, setDidUpdateLoadError] = useState('')
@@ -139,11 +142,77 @@ export default function DidDataStorage() {
   }, [addToast, didOptionsError])
 
   useEffect(() => {
+    if (walletError) {
+      addToast('error', walletError)
+    }
+  }, [addToast, walletError])
+
+  useEffect(() => {
     if (didUpdateLoadError) {
       addToast('error', didUpdateLoadError)
       setDidUpdateLoadError('')
     }
   }, [addToast, didUpdateLoadError])
+
+  const isWalletDisconnectError = error => {
+    const message = error instanceof Error ? error.message : String(error || '')
+    return /disconnected port|extension context invalidated|receiving end does not exist|message channel closed/i.test(message)
+  }
+
+  const markWalletConnected = () => {
+    setWalletStatus('connected')
+    setWalletError('')
+  }
+
+  const markWalletDisconnected = (reason, clearCachedDids = true) => {
+    setWalletStatus('disconnected')
+    setWalletError(reason || 'Wallet disconnected. Reconnect wallet and try again.')
+    if (clearCachedDids) {
+      setDidOptions([])
+    }
+  }
+
+  const enableWalletExtensions = async () => {
+    setWalletStatus('checking')
+    try {
+      const extensions = await web3Enable(config.APP_NAME)
+      if (!extensions.length) {
+        throw new Error('No wallet extension enabled.')
+      }
+      markWalletConnected()
+      return extensions
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      markWalletDisconnected(`Wallet connection failed: ${message}`)
+      throw error
+    }
+  }
+
+  const getDidsSigningExtension = async () => {
+    const extensions = await enableWalletExtensions()
+    const extension = extensions.find(item => item?.dids?.sign)
+
+    if (!extension?.dids?.sign) {
+      const message = 'Wallet does not support DID signing.'
+      markWalletDisconnected(message, false)
+      throw new Error(message)
+    }
+
+    return extension
+  }
+
+  const walletStatusMessage = () => {
+    if (walletStatus === 'checking') {
+      return 'Checking wallet connection...'
+    }
+    if (walletStatus === 'connected') {
+      return 'Wallet connected.'
+    }
+    if (walletStatus === 'disconnected') {
+      return walletError || 'Wallet disconnected. Reconnect wallet and try again.'
+    }
+    return ''
+  }
 
   const normalizeDidInput = rawValue => {
     const value = rawValue.trim()
@@ -151,12 +220,9 @@ export default function DidDataStorage() {
       return { error: 'Enter a DID.' }
     }
 
-    const embeddedMatch = value.match(/did:q(?:sb|bs):[A-Za-z0-9]+/)
+    const embeddedMatch = value.match(/did:qsb:[A-Za-z0-9]+/)
     if (embeddedMatch) {
-      const embedded = embeddedMatch[0]
-      const normalizedDid = embedded.startsWith('did:qbs:')
-        ? embedded.replace('did:qbs:', 'did:qsb:')
-        : embedded
+      const normalizedDid = embeddedMatch[0]
       const didIdPart = normalizedDid.slice('did:qsb:'.length)
       try {
         const decoded = base58Decode(didIdPart)
@@ -189,10 +255,8 @@ export default function DidDataStorage() {
       }
     }
 
-    if (value.startsWith('did:qsb:') || value.startsWith('did:qbs:')) {
-      const normalizedDid = value.startsWith('did:qbs:')
-        ? value.replace('did:qbs:', 'did:qsb:')
-        : value
+    if (value.startsWith('did:qsb:')) {
+      const normalizedDid = value
       const didIdPart = normalizedDid.slice('did:qsb:'.length)
       try {
         const decoded = base58Decode(didIdPart)
@@ -357,6 +421,9 @@ export default function DidDataStorage() {
       didDetailsView={didDetailsView}
       didOptions={didOptions}
       isLoadingDids={isLoadingDids}
+      walletStatus={walletStatus}
+      walletStatusMessage={walletStatusMessage()}
+      reloadWalletDids={loadDidsFromExtension}
       isResolvingDid={isResolvingDid}
       setDidDetailsInput={setDidDetailsInput}
       setDidDetailsError={setDidDetailsError}
@@ -388,6 +455,10 @@ export default function DidDataStorage() {
   }
 
   const toggleAddKeyRole = roleValue => {
+    if (addKeyMaterialType === 'Jwk' && roleValue === 'CapabilityInvocation') {
+      setDidUpdateError('JWK key material cannot be assigned CapabilityInvocation.')
+      return
+    }
     setAddKeyRoles(prev => {
       if (prev.includes(roleValue)) {
         return prev.filter(role => role !== roleValue)
@@ -418,18 +489,15 @@ export default function DidDataStorage() {
       return trimmed
     }
 
-    if (trimmed.startsWith('did:qsb:') || trimmed.startsWith('did:qbs:')) {
-      const normalized = trimmed.startsWith('did:qbs:')
-        ? trimmed.replace('did:qbs:', 'did:qsb:')
-        : trimmed
-      return stringToHex(normalized)
+    if (trimmed.startsWith('did:qsb:')) {
+      return stringToHex(trimmed)
     }
 
     if (trimmed.startsWith('#')) {
-      return stringToHex(`${did}${trimmed}`)
+      return stringToHex(trimmed)
     }
 
-    return stringToHex(`${did}#${trimmed}`)
+    return stringToHex(`#${trimmed}`)
   }
 
   const toDidUrlBytes = value => {
@@ -489,7 +557,7 @@ export default function DidDataStorage() {
     setDidOptionsError('')
 
     try {
-      const extensions = await web3Enable(config.APP_NAME)
+      const extensions = await enableWalletExtensions()
       const didRecords = []
       let hasDidsSupport = false
 
@@ -503,6 +571,7 @@ export default function DidDataStorage() {
 
       if (!hasDidsSupport) {
         setDidOptions([])
+        markWalletDisconnected('Extension does not expose DID storage.', false)
         setDidOptionsError('Extension does not expose DID storage.')
         return
       }
@@ -521,12 +590,17 @@ export default function DidDataStorage() {
       }))
 
       setDidOptions(options)
+      markWalletConnected()
       if (options.length === 0) {
         setDidOptionsError('No DIDs found in extension storage.')
       }
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
       setDidOptions([])
-      setDidOptionsError(`Failed to load DIDs: ${error.message}`)
+      if (isWalletDisconnectError(error)) {
+        markWalletDisconnected('Wallet disconnected. Reconnect wallet and try again.')
+      }
+      setDidOptionsError(`Failed to load DIDs: ${message}`)
     } finally {
       setIsLoadingDids(false)
     }
@@ -612,14 +686,16 @@ export default function DidDataStorage() {
   }
 
   const requestDidPassword = async (did, payload) => {
-    const extensions = await web3Enable(config.APP_NAME)
-    const extension = extensions.find(item => item?.dids?.sign)
-
-    if (!extension?.dids?.sign) {
-      throw new Error('Extension does not support DID signing.')
+    const extension = await getDidsSigningExtension()
+    try {
+      await extension.dids.sign({ did, payload })
+      markWalletConnected()
+    } catch (error) {
+      if (isWalletDisconnectError(error)) {
+        markWalletDisconnected('Wallet disconnected. Reconnect wallet and try again.')
+      }
+      throw error
     }
-
-    await extension.dids.sign({ did, payload })
   }
 
   const normalizeDidSignature = rawSignature => {
@@ -672,19 +748,23 @@ export default function DidDataStorage() {
   }
 
   const requestDidSignature = async (did, payloadBytes) => {
-    const extensions = await web3Enable(config.APP_NAME)
-    const extension = extensions.find(item => item?.dids?.sign)
-
-    if (!extension?.dids?.sign) {
-      throw new Error('Extension does not support DID signing.')
-    }
+    const extension = await getDidsSigningExtension()
 
     const payloadHex = u8aToHex(payloadBytes)
     const signRequest = {
       did,
       payload: payloadHex,
     }
-    const rawSignature = await extension.dids.sign(signRequest)
+    let rawSignature
+    try {
+      rawSignature = await extension.dids.sign(signRequest)
+      markWalletConnected()
+    } catch (error) {
+      if (isWalletDisconnectError(error)) {
+        markWalletDisconnected('Wallet disconnected. Reconnect wallet and try again.')
+      }
+      throw error
+    }
     const didSignature = normalizeDidSignature(rawSignature)
 
     if (!didSignature) {
@@ -692,6 +772,21 @@ export default function DidDataStorage() {
     }
 
     return didSignature
+  }
+
+  const requestDidSignatureForUpdate = async (did, payloadBytes, actionLabel) => {
+    try {
+      return await requestDidSignature(did, payloadBytes)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      setDidUpdateStatus('')
+      setIsUpdatingDid(false)
+      setDidUpdateError(`${actionLabel} failed during DID signing: ${message}`)
+      addAuditEntry('error', `${actionLabel} signing failed: ${message}`, {
+        did,
+      })
+      return null
+    }
   }
 
   const buildSetMetadataDidPayload = (didValue, entry) => {
@@ -714,6 +809,194 @@ export default function DidDataStorage() {
       .map(arg => arg.toU8a())
 
     return u8aConcat(prefix, ...encodedArgs)
+  }
+
+  const decodeBase64Url = value => {
+    const normalized = value.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=')
+    const binary = atob(padded)
+    return Uint8Array.from(binary, char => char.charCodeAt(0))
+  }
+
+  const decodeUvarint = bytes => {
+    let result = 0
+    let shift = 0
+    for (let index = 0; index < bytes.length; index += 1) {
+      const byte = bytes[index]
+      result |= (byte & 0x7f) << shift
+      if ((byte & 0x80) === 0) {
+        return { value: result, length: index + 1 }
+      }
+      shift += 7
+      if (shift > 53) {
+        break
+      }
+    }
+    return null
+  }
+
+  const validateKnownMultikeyLength = (codec, publicKeyLength) => {
+    const knownLengths = {
+      0x1210: [1312],
+      0x1211: [1952],
+      0x1212: [2592],
+      0x00ed: [32],
+      0x1200: [33, 65],
+      0x1201: [33, 65],
+    }
+    const allowed = knownLengths[codec]
+    return !allowed || allowed.includes(publicKeyLength)
+  }
+
+  const parseMultikeyInput = value => {
+    const trimmed = String(value || '').trim()
+    if (!trimmed) {
+      return { error: 'Enter Multikey key material.' }
+    }
+    if (!trimmed.startsWith('u')) {
+      return { error: 'Multikey must start with "u".' }
+    }
+    if (trimmed.length === 1) {
+      return { error: 'Multikey is missing encoded key bytes.' }
+    }
+
+    let decoded
+    try {
+      decoded = decodeBase64Url(trimmed.slice(1))
+    } catch (error) {
+      return { error: 'Multikey must be base64url encoded after the "u" prefix.' }
+    }
+
+    const codec = decodeUvarint(decoded)
+    if (!codec || codec.length >= decoded.length) {
+      return { error: 'Multikey must contain a multicodec prefix and public key bytes.' }
+    }
+
+    const publicKeyLength = decoded.length - codec.length
+    if (!validateKnownMultikeyLength(codec.value, publicKeyLength)) {
+      return { error: `Invalid Multikey length for codec 0x${codec.value.toString(16)}.` }
+    }
+
+    return {
+      type: 'Multikey',
+      codec: codec.value,
+      publicKeyLength,
+      callValue: stringToHex(trimmed),
+    }
+  }
+
+  const parseJwkInput = value => {
+    const trimmed = String(value || '').trim()
+    if (!trimmed) {
+      return { error: 'Enter JWK key material.' }
+    }
+
+    let jsonText = trimmed
+    if (isHex(trimmed)) {
+      try {
+        jsonText = u8aToString(hexToU8a(trimmed))
+      } catch (error) {
+        return { error: 'JWK hex input must decode to UTF-8 JSON.' }
+      }
+    }
+
+    let parsed
+    try {
+      parsed = JSON.parse(jsonText)
+    } catch (error) {
+      return { error: 'JWK must be valid JSON.' }
+    }
+
+    if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
+      return { error: 'JWK must be a JSON object.' }
+    }
+    if (!parsed.kty || typeof parsed.kty !== 'string') {
+      return { error: 'JWK must include string field "kty".' }
+    }
+
+    const normalizedJson = JSON.stringify(parsed)
+    const bytes = stringToU8a(normalizedJson)
+    if (!bytes.length) {
+      return { error: 'JWK must not be empty.' }
+    }
+
+    return {
+      type: 'Jwk',
+      callValue: u8aToHex(bytes),
+    }
+  }
+
+  const parseAddKeyMaterial = () => {
+    if (addKeyMaterialType === 'Jwk') {
+      if (addKeyRoles.includes('CapabilityInvocation')) {
+        return { error: 'JWK key material cannot be assigned CapabilityInvocation.' }
+      }
+      return parseJwkInput(addKeyPublicKey)
+    }
+    return parseMultikeyInput(addKeyPublicKey)
+  }
+
+  const didAddKeyUsesKeyMaterialInput = () => {
+    const args = api?.tx?.did?.addKey?.meta?.args || []
+    const materialArg = args[2]
+    const argName = materialArg?.name?.toString?.() || ''
+    const argType = materialArg?.type?.toString?.() || ''
+    return /key_?material/i.test(argName) || /KeyMaterialInput/i.test(argType)
+  }
+
+  const toAddKeyCallMaterial = parsedMaterial => {
+    if (!didAddKeyUsesKeyMaterialInput()) {
+      if (parsedMaterial.type === 'Jwk') {
+        return {
+          error: 'Connected runtime does not expose KeyMaterialInput, so JWK keys cannot be added.',
+        }
+      }
+      return { value: parsedMaterial.callValue }
+    }
+
+    return {
+      value:
+        parsedMaterial.type === 'Jwk'
+          ? { Jwk: parsedMaterial.callValue }
+          : { Multikey: parsedMaterial.callValue },
+    }
+  }
+
+  const getKeyMaterialInfo = key => {
+    const keyMaterial = key?.key_material || key?.keyMaterial || null
+    const multikey = keyMaterial?.Multikey || keyMaterial?.multikey || null
+    const jwk = keyMaterial?.Jwk || keyMaterial?.jwk || null
+
+    if (multikey) {
+      return {
+        type: 'Multikey',
+        publicKey: multikey.public_key || multikey.publicKey || [],
+        multicodec: multikey.multicodec,
+      }
+    }
+
+    if (jwk) {
+      const publicKeyJwk = jwk.public_key_jwk || jwk.publicKeyJwk || jwk
+      return {
+        type: 'Jwk',
+        publicKeyJwk,
+      }
+    }
+
+    return {
+      type: 'Multikey',
+      publicKey: key?.public_key || key?.publicKey || [],
+      multicodec: key?.multicodec,
+    }
+  }
+
+  const getKeyMaterialType = key => getKeyMaterialInfo(key).type
+
+  const getKeyMaterialHex = key => {
+    const material = getKeyMaterialInfo(key)
+    return material.type === 'Jwk'
+      ? formatBytesHex(material.publicKeyJwk)
+      : formatBytesHex(material.publicKey)
   }
 
   const wrapSignerWithDid = (signer, did) => {
@@ -899,13 +1182,9 @@ export default function DidDataStorage() {
       return false
     }
 
-    const publicKey = toU8aInput(addKeyPublicKey)
-    if (!publicKey) {
-      setDidUpdateError('Enter a public key to add.')
-      return false
-    }
-    if (!String(addKeyPublicKey || '').trim().startsWith('u')) {
-      setDidUpdateError('Public key must be Multikey (start with "u").')
+    const parsedMaterial = parseAddKeyMaterial()
+    if (parsedMaterial.error) {
+      setDidUpdateError(parsedMaterial.error)
       return false
     }
 
@@ -930,15 +1209,23 @@ export default function DidDataStorage() {
       return false
     }
     const controller = controllerRaw ? toU8aInput(controllerNormalized.did) : null
+    const materialForCall = toAddKeyCallMaterial(parsedMaterial)
+    if (materialForCall.error) {
+      setDidUpdateError(materialForCall.error)
+      return false
+    }
 
     const payload = buildDidPayload(
       DID_ADD_KEY_PREFIX,
-      api.tx.did.addKey(didValue, keyIdSuffix, publicKey, addKeyRoles, controller, '0x')
+      api.tx.did.addKey(didValue, keyIdSuffix, materialForCall.value, addKeyRoles, controller, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Adding key')
+    if (!didSignature) {
+      return false
+    }
 
     await submitTx(
-      api.tx.did.addKey(didValue, keyIdSuffix, publicKey, addKeyRoles, controller, didSignature),
+      api.tx.did.addKey(didValue, keyIdSuffix, materialForCall.value, addKeyRoles, controller, didSignature),
       'Adding key...',
       null
     )
@@ -965,7 +1252,10 @@ export default function DidDataStorage() {
       DID_REVOKE_KEY_PREFIX,
       api.tx.did.revokeKey(didValue, keyId, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Revoking key')
+    if (!didSignature) {
+      return
+    }
 
     await submitTx(
       api.tx.did.revokeKey(didValue, keyId, didSignature),
@@ -988,7 +1278,10 @@ export default function DidDataStorage() {
       DID_DEACTIVATE_PREFIX,
       api.tx.did.deactivateDid(didValue, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Deactivating DID')
+    if (!didSignature) {
+      return
+    }
 
     await submitTx(
       api.tx.did.deactivateDid(didValue, didSignature),
@@ -1027,7 +1320,7 @@ export default function DidDataStorage() {
 
     const service = {
       id: serviceId,
-      serviceType,
+      service_type: serviceType,
       endpoint,
     }
 
@@ -1035,7 +1328,10 @@ export default function DidDataStorage() {
       DID_ADD_SERVICE_PREFIX,
       api.tx.did.addService(didValue, service, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Adding service')
+    if (!didSignature) {
+      return false
+    }
 
     await submitTx(
       api.tx.did.addService(didValue, service, didSignature),
@@ -1065,7 +1361,10 @@ export default function DidDataStorage() {
       DID_REMOVE_SERVICE_PREFIX,
       api.tx.did.removeService(didValue, serviceId, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Removing service')
+    if (!didSignature) {
+      return
+    }
 
     await submitTx(
       api.tx.did.removeService(didValue, serviceId, didSignature),
@@ -1102,7 +1401,10 @@ export default function DidDataStorage() {
     }
 
     const payload = buildSetMetadataDidPayload(didValue, entry)
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Setting metadata')
+    if (!didSignature) {
+      return false
+    }
     await submitTx(
       api.tx.did.setMetadata(didValue, entry, didSignature),
       'Setting metadata...',
@@ -1131,7 +1433,10 @@ export default function DidDataStorage() {
       DID_REMOVE_METADATA_PREFIX,
       api.tx.did.removeMetadata(didValue, key, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Removing metadata')
+    if (!didSignature) {
+      return
+    }
 
     await submitTx(
       api.tx.did.removeMetadata(didValue, key, didSignature),
@@ -1166,6 +1471,14 @@ export default function DidDataStorage() {
       setDidUpdateError('Revoked key cannot be updated.')
       return false
     }
+    if (
+      updateRolesValues.includes('CapabilityInvocation') &&
+      matchedKey &&
+      getKeyMaterialType(matchedKey) === 'Jwk'
+    ) {
+      setDidUpdateError('JWK key material cannot be assigned CapabilityInvocation.')
+      return false
+    }
 
     if (!updateRolesValues.length) {
       setDidUpdateError('Select at least one role.')
@@ -1176,7 +1489,10 @@ export default function DidDataStorage() {
       DID_UPDATE_ROLES_PREFIX,
       api.tx.did.updateRoles(didValue, keyId, updateRolesValues, '0x')
     )
-    const didSignature = await requestDidSignature(didValue, payload)
+    const didSignature = await requestDidSignatureForUpdate(didValue, payload, 'Updating roles')
+    if (!didSignature) {
+      return false
+    }
 
     await submitTx(
       api.tx.did.updateRoles(
@@ -1196,10 +1512,14 @@ export default function DidDataStorage() {
       didUpdateInput={didUpdateInput}
       didOptions={didOptions}
       isLoadingDids={isLoadingDids}
+      walletStatus={walletStatus}
+      walletStatusMessage={walletStatusMessage()}
+      reloadWalletDids={loadDidsFromExtension}
       isLoadingDidUpdate={isLoadingDidUpdate}
       didUpdateSection={didUpdateSection}
       didUpdateChainData={didUpdateChainData}
       isUpdatingDid={isUpdatingDid}
+      addKeyMaterialType={addKeyMaterialType}
       addKeyPublicKey={addKeyPublicKey}
       addKeyIdSuffix={addKeyIdSuffix}
       addKeyController={addKeyController}
@@ -1220,6 +1540,7 @@ export default function DidDataStorage() {
       metadataModalMode={metadataModalMode}
       setDidUpdateInput={setDidUpdateInput}
       setDidOptions={setDidOptions}
+      setAddKeyMaterialType={setAddKeyMaterialType}
       setAddKeyPublicKey={setAddKeyPublicKey}
       setAddKeyIdSuffix={setAddKeyIdSuffix}
       setAddKeyController={setAddKeyController}
@@ -1254,6 +1575,8 @@ export default function DidDataStorage() {
       formatBytesHex={formatBytesHex}
       formatBytesText={formatBytesText}
       normalizeRoles={normalizeRoles}
+      getKeyMaterialType={getKeyMaterialType}
+      getKeyMaterialHex={getKeyMaterialHex}
     />
   )
 
@@ -1262,6 +1585,9 @@ export default function DidDataStorage() {
       <SchemaCard
         didOptions={didOptions}
         isLoadingDids={isLoadingDids}
+        walletStatus={walletStatus}
+        walletStatusMessage={walletStatusMessage()}
+        reloadWalletDids={loadDidsFromExtension}
         schemaAction={schemaAction}
         schemaDidInput={schemaDidInput}
         schemaUrlInput={schemaUrlInput}

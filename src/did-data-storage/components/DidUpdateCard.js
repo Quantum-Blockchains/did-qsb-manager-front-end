@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Dropdown, Form, Message } from 'semantic-ui-react'
+import { Button, Card, Dropdown, Form, Message } from 'semantic-ui-react'
 import KeysSection from './did-update/KeysSection'
 import ServicesSection from './did-update/ServicesSection'
 import MetadataSection from './did-update/MetadataSection'
@@ -10,10 +10,14 @@ export default function DidUpdateCard(props) {
     didUpdateInput,
     didOptions,
     isLoadingDids,
+    walletStatus,
+    walletStatusMessage,
+    reloadWalletDids,
     isLoadingDidUpdate,
     didUpdateSection,
     didUpdateChainData,
     isUpdatingDid,
+    addKeyMaterialType,
     addKeyPublicKey,
     addKeyIdSuffix,
     addKeyController,
@@ -34,6 +38,7 @@ export default function DidUpdateCard(props) {
     metadataModalMode,
     setDidUpdateInput,
     setDidOptions,
+    setAddKeyMaterialType,
     setAddKeyPublicKey,
     setAddKeyIdSuffix,
     setAddKeyController,
@@ -68,6 +73,8 @@ export default function DidUpdateCard(props) {
     formatBytesHex,
     formatBytesText,
     normalizeRoles,
+    getKeyMaterialType,
+    getKeyMaterialHex,
   } = props
 
   const keys = Array.isArray(didUpdateChainData?.keys) ? didUpdateChainData.keys : []
@@ -105,6 +112,28 @@ export default function DidUpdateCard(props) {
         <Card.Meta>{actionHeader.meta}</Card.Meta>
       </Card.Content>
       <Card.Content>
+        {walletStatusMessage && (
+          <Message
+            size="small"
+            info={walletStatus === 'checking' || walletStatus === 'connected'}
+            warning={walletStatus === 'disconnected'}
+          >
+            <Message.Content>
+              {walletStatusMessage}
+              {walletStatus === 'disconnected' && (
+                <Button
+                  type="button"
+                  size="tiny"
+                  basic
+                  onClick={reloadWalletDids}
+                  style={{ marginLeft: '.75rem' }}
+                >
+                  Reconnect wallet
+                </Button>
+              )}
+            </Message.Content>
+          </Message>
+        )}
         <Form>
           <Form.Field>
             <label>Target DID</label>
@@ -154,6 +183,7 @@ export default function DidUpdateCard(props) {
           <KeysSection
             keys={keys}
             isUpdatingDid={isUpdatingDid}
+            addKeyMaterialType={addKeyMaterialType}
             addKeyPublicKey={addKeyPublicKey}
             addKeyIdSuffix={addKeyIdSuffix}
             addKeyController={addKeyController}
@@ -164,6 +194,7 @@ export default function DidUpdateCard(props) {
             updateRolesKeyId={updateRolesKeyId}
             updateRolesValues={updateRolesValues}
             isUpdateRolesModalOpen={isUpdateRolesModalOpen}
+            setAddKeyMaterialType={setAddKeyMaterialType}
             setAddKeyPublicKey={setAddKeyPublicKey}
             setAddKeyIdSuffix={setAddKeyIdSuffix}
             setAddKeyController={setAddKeyController}
@@ -185,6 +216,8 @@ export default function DidUpdateCard(props) {
             formatBytesHex={formatBytesHex}
             formatBytesText={formatBytesText}
             normalizeRoles={normalizeRoles}
+            getKeyMaterialType={getKeyMaterialType}
+            getKeyMaterialHex={getKeyMaterialHex}
           />
         )}
 

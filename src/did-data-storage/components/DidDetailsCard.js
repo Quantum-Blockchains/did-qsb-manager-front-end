@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Card, Dropdown, Form, Segment } from 'semantic-ui-react'
+import { Button, Card, Dropdown, Form, Message, Segment } from 'semantic-ui-react'
 
 export default function DidDetailsCard(props) {
   const {
@@ -11,6 +11,9 @@ export default function DidDetailsCard(props) {
     didDetailsView,
     didOptions,
     isLoadingDids,
+    walletStatus,
+    walletStatusMessage,
+    reloadWalletDids,
     isResolvingDid,
     setDidDetailsInput,
     setDidDetailsError,
@@ -28,6 +31,28 @@ export default function DidDetailsCard(props) {
         <Card.Meta>Resolve DID via did_getByString RPC method.</Card.Meta>
       </Card.Content>
       <Card.Content>
+        {walletStatusMessage && (
+          <Message
+            size="small"
+            info={walletStatus === 'checking' || walletStatus === 'connected'}
+            warning={walletStatus === 'disconnected'}
+          >
+            <Message.Content>
+              {walletStatusMessage}
+              {walletStatus === 'disconnected' && (
+                <Button
+                  type="button"
+                  size="tiny"
+                  basic
+                  onClick={reloadWalletDids}
+                  style={{ marginLeft: '.75rem' }}
+                >
+                  Reconnect wallet
+                </Button>
+              )}
+            </Message.Content>
+          </Message>
+        )}
         <Form>
           <Form.Group widths="equal">
             <Form.Field error={Boolean(didDetailsError)} width={14}>

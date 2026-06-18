@@ -27,6 +27,9 @@ export default function SchemaCard(props) {
   const {
     didOptions,
     isLoadingDids,
+    walletStatus,
+    walletStatusMessage,
+    reloadWalletDids,
     schemaAction,
     schemaDidInput,
     schemaUrlInput,
@@ -81,6 +84,28 @@ export default function SchemaCard(props) {
         <Card.Meta>{actionMeta.meta}</Card.Meta>
       </Card.Content>
       <Card.Content>
+        {walletStatusMessage && (
+          <Message
+            size="small"
+            info={walletStatus === 'checking' || walletStatus === 'connected'}
+            warning={walletStatus === 'disconnected'}
+          >
+            <Message.Content>
+              {walletStatusMessage}
+              {walletStatus === 'disconnected' && (
+                <Button
+                  type="button"
+                  size="tiny"
+                  basic
+                  onClick={reloadWalletDids}
+                  style={{ marginLeft: '.75rem' }}
+                >
+                  Reconnect wallet
+                </Button>
+              )}
+            </Message.Content>
+          </Message>
+        )}
         <Form>
           <Form.Field>
             <label>Issuer DID</label>
