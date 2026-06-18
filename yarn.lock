@@ -2266,19 +2266,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:^1.3.0":
-  version: 1.9.7
-  resolution: "@noble/curves@npm:1.9.7"
+"@noble/curves@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@noble/curves@npm:1.1.0"
   dependencies:
-    "@noble/hashes": 1.8.0
-  checksum: 65acad44ac6944ab96471109087d6cfcbcaa251faad6295961be9a5ace220634f4b7c74a96d1ee2274ad3880ea953d8e8259893ed8c906c831ef29f5c04ec9cc
+    "@noble/hashes": 1.3.1
+  checksum: 2658cdd3f84f71079b4e3516c47559d22cf4b55c23ac8ee9d2b1f8e5b72916d9689e59820e0f9d9cb4a46a8423af5b56dc6bb7782405c88be06a015180508db5
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:1.8.0, @noble/hashes@npm:^1.3.1, @noble/hashes@npm:^1.3.3":
-  version: 1.8.0
-  resolution: "@noble/hashes@npm:1.8.0"
-  checksum: c94e98b941963676feaba62475b1ccfa8341e3f572adbb3b684ee38b658df44100187fa0ef4220da580b13f8d27e87d5492623c8a02ecc61f23fb9960c7918f5
+"@noble/hashes@npm:1.3.1":
+  version: 1.3.1
+  resolution: "@noble/hashes@npm:1.3.1"
+  checksum: 7fdefc0f7a0c1ec27acc6ff88841793e3f93ec4ce6b8a6a12bfc0dd70ae6b7c4c82fe305fdfeda1735d5ad4a9eebe761e6693b3d355689c559e91242f4bc95b1
   languageName: node
   linkType: hard
 
@@ -2368,138 +2368,74 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot-api/client@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/client@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
+"@polkadot/api-augment@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-augment-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/api-augment@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-augment-10.9.1.tgz"
   dependencies:
-    "@polkadot-api/metadata-builders": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/substrate-bindings": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/substrate-client": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/utils": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  peerDependencies:
-    rxjs: ">=7.8.0"
-  checksum: 98529e8088a4cdbc63a02c87b47f4de1373fb5ce7c0231da1b32baf8125256a6125848a90edf12f93db86bb72f61017d9a23cf0697cc97c8568c491ff64e68fc
+    "@polkadot/api-base": 10.9.1
+    "@polkadot/rpc-augment": 10.9.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-augment": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/util": ^12.3.1
+    tslib: ^2.5.3
+  checksum: b0aeed5ebf640c58a252a29a33f12d4c39d0dcdf10b875501012c3b4b05955ed8be85efbf75e17ad237a561e1171821979ffdddf7e6a64cb0806badb2752c190
   languageName: node
   linkType: hard
 
-"@polkadot-api/json-rpc-provider-proxy@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/json-rpc-provider-proxy@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
-  checksum: 4c47c978806bc62fff1b5788241cd59457d62ebe347b401b0a621d56d301f7b205aeb20ade24b67c2a5d63a497738694cb4030f79d5009460d17a546e8723f81
-  languageName: node
-  linkType: hard
-
-"@polkadot-api/json-rpc-provider@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/json-rpc-provider@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
-  checksum: 00d4e1f7900a1739e1ba7a3b13d399e5540a27d5c026c985aa4afdf865fb37da4aa4029a3a740932615482cdf18e657011ef05e7e61c2de04016f68fbb343ae7
-  languageName: node
-  linkType: hard
-
-"@polkadot-api/metadata-builders@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/metadata-builders@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
+"@polkadot/api-base@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-base-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/api-base@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-base-10.9.1.tgz"
   dependencies:
-    "@polkadot-api/substrate-bindings": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/utils": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  checksum: 7fb6264fbe7a49c8f8848fb36f51fa9882c504fc026b0ac28cf2d83890cfa2c2ce7a3dd8c01aed28b991cb4d4a64910557111afe8792375aea2aba1b2aabe233
-  languageName: node
-  linkType: hard
-
-"@polkadot-api/substrate-bindings@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/substrate-bindings@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
-  dependencies:
-    "@noble/hashes": ^1.3.1
-    "@polkadot-api/utils": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@scure/base": ^1.1.1
-    scale-ts: ^1.6.0
-  checksum: 3640063696c4655522587bdb4f2ca99eb2772ee13236965418bf6e97026a1c52cec8a5996560eedac453365e96b51e35283464b4dda0d28d9deb398fe8c3551c
-  languageName: node
-  linkType: hard
-
-"@polkadot-api/substrate-client@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/substrate-client@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
-  checksum: 3e04f430be68d54173a3b3c1fae33f3cfe2e61c959eb431f89bd306500b9da7e009c02553cf2464a6eb15c5bbe7aa27c45f6ea1371bbfcdddc08519dedcaf4a3
-  languageName: node
-  linkType: hard
-
-"@polkadot-api/utils@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0":
-  version: 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-  resolution: "@polkadot-api/utils@npm:0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0"
-  checksum: 0bf7b078a53f1eaf2f4cec3c41f3e82fc5afb4a347dcbc7b538723aeb1b4893834a2f1aeed425443a25ee0e1a6472c85d8be600e73a6d25ea16a0748d25c00bf
-  languageName: node
-  linkType: hard
-
-"@polkadot/api-augment@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/api-augment@npm:10.13.1"
-  dependencies:
-    "@polkadot/api-base": 10.13.1
-    "@polkadot/rpc-augment": 10.13.1
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-augment": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/util": ^12.6.2
-    tslib: ^2.6.2
-  checksum: e72db9d7a2a3e4a84ad38f4da0e1d979750e47d46ffb00c449a1b08ded2b71eede74e20bf1a4e771fabf119d937b81080b8d15db860d4b5c7b068a33f9f5493a
-  languageName: node
-  linkType: hard
-
-"@polkadot/api-base@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/api-base@npm:10.13.1"
-  dependencies:
-    "@polkadot/rpc-core": 10.13.1
-    "@polkadot/types": 10.13.1
-    "@polkadot/util": ^12.6.2
+    "@polkadot/rpc-core": 10.9.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/util": ^12.3.1
     rxjs: ^7.8.1
-    tslib: ^2.6.2
-  checksum: ba2001ca2336f76788c3d34298086475ec45a2a848a97a9528ff55fb880e3680ab12e240f9d785fdde6e5f9f5c93b353bd1b4292aaa51b261ab07565ab4149da
+    tslib: ^2.5.3
+  checksum: a761f4ade747a295c16b7e6f24c1bb93e1736aa7fa9f1cb3c651c84d02a99cc62658e83326fa339882423966a55bf0046b74a69a1a4e4567c8d6c1c4db4eb306
   languageName: node
   linkType: hard
 
-"@polkadot/api-derive@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/api-derive@npm:10.13.1"
+"@polkadot/api-derive@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-derive-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/api-derive@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-derive-10.9.1.tgz"
   dependencies:
-    "@polkadot/api": 10.13.1
-    "@polkadot/api-augment": 10.13.1
-    "@polkadot/api-base": 10.13.1
-    "@polkadot/rpc-core": 10.13.1
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/util": ^12.6.2
-    "@polkadot/util-crypto": ^12.6.2
+    "@polkadot/api": 10.9.1
+    "@polkadot/api-augment": 10.9.1
+    "@polkadot/api-base": 10.9.1
+    "@polkadot/rpc-core": 10.9.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/util": ^12.3.1
+    "@polkadot/util-crypto": ^12.3.1
     rxjs: ^7.8.1
-    tslib: ^2.6.2
-  checksum: c0e5ed91515a0572e0685623d972327c1affeff4f0b7b49d1ae1ad1dc97594891989a528fe3dde05127bac3119b42ae0303d3fbcdf4c34eef63e859a66055730
+    tslib: ^2.5.3
+  checksum: 072a43bcc55787beb6c29afe0f011c03cdde3a9b6ac38d972d0b13ff93a1e14198d769a926edfd324c3947735dd8c8fcb7a61629409322230fd8559e7c17a1d7
   languageName: node
   linkType: hard
 
-"@polkadot/api@npm:10.13.1, @polkadot/api@npm:^10.12.4, @polkadot/api@npm:^10.6.1":
-  version: 10.13.1
-  resolution: "@polkadot/api@npm:10.13.1"
+"@polkadot/api@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/api@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-api-10.9.1.tgz"
   dependencies:
-    "@polkadot/api-augment": 10.13.1
-    "@polkadot/api-base": 10.13.1
-    "@polkadot/api-derive": 10.13.1
-    "@polkadot/keyring": ^12.6.2
-    "@polkadot/rpc-augment": 10.13.1
-    "@polkadot/rpc-core": 10.13.1
-    "@polkadot/rpc-provider": 10.13.1
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-augment": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/types-create": 10.13.1
-    "@polkadot/types-known": 10.13.1
-    "@polkadot/util": ^12.6.2
-    "@polkadot/util-crypto": ^12.6.2
+    "@polkadot/api-augment": 10.9.1
+    "@polkadot/api-base": 10.9.1
+    "@polkadot/api-derive": 10.9.1
+    "@polkadot/keyring": ^12.3.1
+    "@polkadot/rpc-augment": 10.9.1
+    "@polkadot/rpc-core": 10.9.1
+    "@polkadot/rpc-provider": 10.9.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-augment": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/types-create": 10.9.1
+    "@polkadot/types-known": 10.9.1
+    "@polkadot/util": ^12.3.1
+    "@polkadot/util-crypto": ^12.3.1
     eventemitter3: ^5.0.1
     rxjs: ^7.8.1
-    tslib: ^2.6.2
-  checksum: 1b2b6bea2ac649e081103bfe221cdb576f084c6e8c88ff8893c63dae81c6f456a4237d0aac6915633c4749dac017490672dade5d76dad151bd79f6966c4291bf
+    tslib: ^2.5.3
+  checksum: 6b37d9bacf0599bb7c385ddefca929547299a6f1d242ce3215f8480672297c81ec30c251bc9aac3889c5956bd9ef3918d69364819861eec308f4aa347c08110d
   languageName: node
   linkType: hard
 
@@ -2537,490 +2473,378 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/keyring@npm:^12.1.2, @polkadot/keyring@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/keyring@npm:12.6.2"
+"@polkadot/keyring@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-keyring-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/keyring@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-keyring-12.3.2.tgz"
   dependencies:
-    "@polkadot/util": 12.6.2
-    "@polkadot/util-crypto": 12.6.2
-    tslib: ^2.6.2
+    "@polkadot/util": 12.3.2
+    "@polkadot/util-crypto": 12.3.2
+    tslib: ^2.5.3
   peerDependencies:
-    "@polkadot/util": 12.6.2
-    "@polkadot/util-crypto": 12.6.2
-  checksum: b8591690cdd2b9c0fea5de88efe0be19190466572ecb696cc284eec61343b1a2fe0b61a7cfad54933730a132f65d7444619bcb2c8620f38bc0246bfaaa5026f4
+    "@polkadot/util": 12.3.2
+    "@polkadot/util-crypto": 12.3.2
+  checksum: b869c5b0781acb6ebe91f9bcd067404c81ec9c0736f1ef3b3fa4c81a13f7a894b3ef1a63b226c70caf94f60c3be58b126489736bd4d00148b6276e4c974fc56c
   languageName: node
   linkType: hard
 
-"@polkadot/keyring@npm:^13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/keyring@npm:13.5.8"
+"@polkadot/networks@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-networks-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/networks@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-networks-12.3.2.tgz"
   dependencies:
-    "@polkadot/util": 13.5.8
-    "@polkadot/util-crypto": 13.5.8
-    tslib: ^2.8.0
-  peerDependencies:
-    "@polkadot/util": 13.5.8
-    "@polkadot/util-crypto": 13.5.8
-  checksum: 30da38f780d6fd78d01b7d4ab1140219ef3561d131148e390b7858c4c0bbeee7146c1fd89fbe363cd35595a75640eb6fb5e516b5f6b4cf43a9688e1c50eb8f1d
+    "@polkadot/util": 12.3.2
+    "@substrate/ss58-registry": ^1.40.0
+    tslib: ^2.5.3
+  checksum: 54d5aa2a90b761a200bf0cf492f1c53cbbd555067f9486542997097640b0813e46675837e83225cee8ab4e816bcae12cdc046f07b5869930ab1e694b1e6e3cec
   languageName: node
   linkType: hard
 
-"@polkadot/networks@npm:12.6.2, @polkadot/networks@npm:^12.1.2, @polkadot/networks@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/networks@npm:12.6.2"
+"@polkadot/rpc-augment@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-rpc-augment-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/rpc-augment@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-rpc-augment-10.9.1.tgz"
   dependencies:
-    "@polkadot/util": 12.6.2
-    "@substrate/ss58-registry": ^1.44.0
-    tslib: ^2.6.2
-  checksum: 7f3dbdd02d8429f82c36ce284ca279af663d45c1a40ce4ce1e38ec2a06fc9d6d27c66d374f32b91ae3058257f33d60701481c9e95ceab19bd2eb70d83465b026
+    "@polkadot/rpc-core": 10.9.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/util": ^12.3.1
+    tslib: ^2.5.3
+  checksum: 4f7b090be6d88ef6a56679a80da856bf007994e2142e16fbac6030132789b5a2411421650935ed4b18334afca399edfc0387135731836c6d9f8420acf510f11b
   languageName: node
   linkType: hard
 
-"@polkadot/networks@npm:13.5.8, @polkadot/networks@npm:^13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/networks@npm:13.5.8"
+"@polkadot/rpc-core@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-rpc-core-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/rpc-core@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-rpc-core-10.9.1.tgz"
   dependencies:
-    "@polkadot/util": 13.5.8
-    "@substrate/ss58-registry": ^1.51.0
-    tslib: ^2.8.0
-  checksum: 020b4e40862f5c86ef84a9aca4cf5eef62dc179edc2c821c854f9b5a02317450e56b5c99083e2c9d4113dd3f98385e1d8dbceb88eb10bca5fe30ca3d1739d48f
-  languageName: node
-  linkType: hard
-
-"@polkadot/rpc-augment@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/rpc-augment@npm:10.13.1"
-  dependencies:
-    "@polkadot/rpc-core": 10.13.1
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/util": ^12.6.2
-    tslib: ^2.6.2
-  checksum: c68bfb43d7954205c469e575c25c4a82d3bc2b19a00d203d0f58a4271343077dad1b905eca91f1e26cb3a38fe03f411f5be73c610a151614b9c2693abcf33fcc
-  languageName: node
-  linkType: hard
-
-"@polkadot/rpc-core@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/rpc-core@npm:10.13.1"
-  dependencies:
-    "@polkadot/rpc-augment": 10.13.1
-    "@polkadot/rpc-provider": 10.13.1
-    "@polkadot/types": 10.13.1
-    "@polkadot/util": ^12.6.2
+    "@polkadot/rpc-augment": 10.9.1
+    "@polkadot/rpc-provider": 10.9.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/util": ^12.3.1
     rxjs: ^7.8.1
-    tslib: ^2.6.2
-  checksum: 0fcf03c8db6da394e4aa28df64d9a2c0abe9be04128df85dc0e2462a993f982d1f6d8fc59f7e58578a4acc11108ba67414cce233dfd9f6d088c3a5878d4cc2a8
+    tslib: ^2.5.3
+  checksum: 538a207f5d321b4b18b0580da438598dd78e496dbc7069a776abcc39ede36903981ba2b9897eea73ecfe2f48a4d0cbd5b5cd738b3184f5c333709e6f4603f22a
   languageName: node
   linkType: hard
 
-"@polkadot/rpc-provider@npm:10.13.1, @polkadot/rpc-provider@npm:^10.12.4":
-  version: 10.13.1
-  resolution: "@polkadot/rpc-provider@npm:10.13.1"
+"@polkadot/rpc-provider@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-rpc-provider-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/rpc-provider@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-rpc-provider-10.9.1.tgz"
   dependencies:
-    "@polkadot/keyring": ^12.6.2
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-support": 10.13.1
-    "@polkadot/util": ^12.6.2
-    "@polkadot/util-crypto": ^12.6.2
-    "@polkadot/x-fetch": ^12.6.2
-    "@polkadot/x-global": ^12.6.2
-    "@polkadot/x-ws": ^12.6.2
-    "@substrate/connect": 0.8.8
+    "@polkadot/keyring": ^12.3.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-support": 10.9.1
+    "@polkadot/util": ^12.3.1
+    "@polkadot/util-crypto": ^12.3.1
+    "@polkadot/x-fetch": ^12.3.1
+    "@polkadot/x-global": ^12.3.1
+    "@polkadot/x-ws": ^12.3.1
+    "@substrate/connect": 0.7.26
     eventemitter3: ^5.0.1
-    mock-socket: ^9.3.1
-    nock: ^13.5.0
-    tslib: ^2.6.2
+    mock-socket: ^9.2.1
+    nock: ^13.3.1
+    tslib: ^2.5.3
   dependenciesMeta:
     "@substrate/connect":
       optional: true
-  checksum: ea254d36c5bcc919869851e9c08683a1f63d79ed6903485864f49a4c984dfdd9c2f10cc816036e54b930d64b8e7965a4bf360e6333b9641d1cfeccd829410777
+  checksum: 4521ba64a1e69ed323910796a4598755e8101704aae3be33b6c363be4ebb9ea1a99ced17b8cd9fa3ab15abf5900e1055279f532f47b8472e8a143a299bfa046d
   languageName: node
   linkType: hard
 
-"@polkadot/types-augment@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/types-augment@npm:10.13.1"
+"@polkadot/types-augment@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-augment-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/types-augment@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-augment-10.9.1.tgz"
   dependencies:
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/util": ^12.6.2
-    tslib: ^2.6.2
-  checksum: 653ff88c10cc6b6399bd5f54e6fd5c434b7a0e37d3a60d73a7b24a258544aad959907d8d78f347015a2d8006444419d94cd1e5b38c4a20179aba5726407a9998
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/util": ^12.3.1
+    tslib: ^2.5.3
+  checksum: 7c79b4c39b96ad8a52aeadb267b372e44bc0c7c23f0091a9eb6b1df6af5a40d7f2bde0630d733d6786b306466e84b325af11c07242e779481465b53adbbc212a
   languageName: node
   linkType: hard
 
-"@polkadot/types-codec@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/types-codec@npm:10.13.1"
+"@polkadot/types-codec@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-codec-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/types-codec@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-codec-10.9.1.tgz"
   dependencies:
-    "@polkadot/util": ^12.6.2
-    "@polkadot/x-bigint": ^12.6.2
-    tslib: ^2.6.2
-  checksum: 5f5dadd0cde5686c19aab5042180e54bd9496505063bd873014773c6304c57b80903876162a3e87183487570a6a3e69c707b1ca99f4e6272f7c2c1c9588b9b66
+    "@polkadot/util": ^12.3.1
+    "@polkadot/x-bigint": ^12.3.1
+    tslib: ^2.5.3
+  checksum: ac11b770fa4328f55daf6dd78fc8fc4d6906fb0d4b2bf92eaece58332c74f2b178d598a310a6dd068c72856acefddf5f7d23cac56991fa12f61d6853fb73d582
   languageName: node
   linkType: hard
 
-"@polkadot/types-create@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/types-create@npm:10.13.1"
+"@polkadot/types-create@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-create-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/types-create@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-create-10.9.1.tgz"
   dependencies:
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/util": ^12.6.2
-    tslib: ^2.6.2
-  checksum: 8bba9e0f5b02080c4f1e4bedd3043e136c5ce23d28d8710e274fd571254dc01d0b845177c9321150d7fdb6f745bb7a259eee863337675070891e54a255e3c103
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/util": ^12.3.1
+    tslib: ^2.5.3
+  checksum: 1ff0baa7b8ac5b1eea101f824347cb2bf4494fab4b4c20aef897b6577314b3fceb46621ef2f76bd8baef3a97f64016c5ddac1b7745b486d77a4fd06ffb0c9781
   languageName: node
   linkType: hard
 
-"@polkadot/types-known@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/types-known@npm:10.13.1"
+"@polkadot/types-known@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-known-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/types-known@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-known-10.9.1.tgz"
   dependencies:
-    "@polkadot/networks": ^12.6.2
-    "@polkadot/types": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/types-create": 10.13.1
-    "@polkadot/util": ^12.6.2
-    tslib: ^2.6.2
-  checksum: c443fff703ab864440f626852badd1b6a80920bc9ed2efc104247bd9e98f66e74ee8227bea8a4a43cf442665a16456e4a31afd9e98ad1a9e17b49e1119d103ee
+    "@polkadot/networks": ^12.3.1
+    "@polkadot/types": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/types-create": 10.9.1
+    "@polkadot/util": ^12.3.1
+    tslib: ^2.5.3
+  checksum: 8a3dd0dead1759112b9011c5ff47bf9fa0f5a00d0d5cba841d724494a9434a2f565fad8ab654ae8cc3949a10c28f3966034bfc23e493b7cc373d3532de508953
   languageName: node
   linkType: hard
 
-"@polkadot/types-support@npm:10.13.1":
-  version: 10.13.1
-  resolution: "@polkadot/types-support@npm:10.13.1"
+"@polkadot/types-support@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-support-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/types-support@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-support-10.9.1.tgz"
   dependencies:
-    "@polkadot/util": ^12.6.2
-    tslib: ^2.6.2
-  checksum: c9b14b6c08922292f08f37a46f1c87973383f8fa657b695212595e839681aeff26b92f686dec2a6ae30bd77083e42674283ad2382f713850cdb95823725bd81d
+    "@polkadot/util": ^12.3.1
+    tslib: ^2.5.3
+  checksum: f5df33f215f529c33d4fd7ad7d6877a4567954488971c2986da416b6578ccb6d5c6eeadab4602abe0e3ce17373cdd6de0ce6f09529852b6e2fd6bc28b9183f9b
   languageName: node
   linkType: hard
 
-"@polkadot/types@npm:10.13.1, @polkadot/types@npm:^10.12.4, @polkadot/types@npm:^10.6.1":
-  version: 10.13.1
-  resolution: "@polkadot/types@npm:10.13.1"
+"@polkadot/types@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-10.9.1.tgz":
+  version: 10.9.1
+  resolution: "@polkadot/types@https://github.com/Quantum-Blockchains/api/releases/download/v10.9.1/polkadot-types-10.9.1.tgz"
   dependencies:
-    "@polkadot/keyring": ^12.6.2
-    "@polkadot/types-augment": 10.13.1
-    "@polkadot/types-codec": 10.13.1
-    "@polkadot/types-create": 10.13.1
-    "@polkadot/util": ^12.6.2
-    "@polkadot/util-crypto": ^12.6.2
+    "@polkadot/keyring": ^12.3.1
+    "@polkadot/types-augment": 10.9.1
+    "@polkadot/types-codec": 10.9.1
+    "@polkadot/types-create": 10.9.1
+    "@polkadot/util": ^12.3.1
+    "@polkadot/util-crypto": ^12.3.1
     rxjs: ^7.8.1
-    tslib: ^2.6.2
-  checksum: d1e7b582f7a8c50ab1944d719c8ef29e9b77c07bf89635f028db38192229dce213b11874923e50d102016b197d687170d9a33445be97e78505da474bd1c87d1e
+    tslib: ^2.5.3
+  checksum: f447fe5e53f29cd9fce8af4ae7b17008caef5112710e026bb901fe95450938b7ce92a31048d3aaf242348f89165c3b3a8beca353266569dd73018b11336c0ed4
   languageName: node
   linkType: hard
 
-"@polkadot/ui-keyring@npm:^3.3.1":
-  version: 3.16.3
-  resolution: "@polkadot/ui-keyring@npm:3.16.3"
+"@polkadot/ui-keyring@https://github.com/Quantum-Blockchains/ui/releases/download/v3.5.1/polkadot-ui-keyring-3.5.1.tgz":
+  version: 3.5.1
+  resolution: "@polkadot/ui-keyring@https://github.com/Quantum-Blockchains/ui/releases/download/v3.5.1/polkadot-ui-keyring-3.5.1.tgz"
   dependencies:
-    "@polkadot/keyring": ^13.5.8
-    "@polkadot/ui-settings": 3.16.3
-    "@polkadot/util": ^13.5.8
-    "@polkadot/util-crypto": ^13.5.8
+    "@polkadot/keyring": ^12.3.1
+    "@polkadot/ui-settings": 3.5.1
+    "@polkadot/util": ^12.3.1
+    "@polkadot/util-crypto": ^12.3.1
     mkdirp: ^3.0.1
     rxjs: ^7.8.1
     store: ^2.0.12
-    tslib: ^2.8.1
+    tslib: ^2.5.3
   peerDependencies:
     "@polkadot/keyring": "*"
     "@polkadot/ui-settings": "*"
     "@polkadot/util": "*"
-  checksum: b3e9bc98ed9d0fa95b4eae63eec7d16beb8e363380aede4e30d2f283a239e50306e12a078cf265f24c1cc64688aa6952a5e90711d0dde1684dbec046f11c1fa4
+  checksum: f29a5552cb2a6d63edddf63d027602dc9eeee97926bef9b0df085030629bcfef671ecd211e8abbc32a4af51f3486e8332a7b537d2505632ff8800e147798db3a
   languageName: node
   linkType: hard
 
-"@polkadot/ui-settings@npm:3.16.3, @polkadot/ui-settings@npm:^3.3.1":
-  version: 3.16.3
-  resolution: "@polkadot/ui-settings@npm:3.16.3"
+"@polkadot/ui-settings@https://github.com/Quantum-Blockchains/ui/releases/download/v3.5.1/polkadot-ui-settings-3.5.1.tgz":
+  version: 3.5.1
+  resolution: "@polkadot/ui-settings@https://github.com/Quantum-Blockchains/ui/releases/download/v3.5.1/polkadot-ui-settings-3.5.1.tgz"
   dependencies:
-    "@polkadot/networks": ^13.5.8
-    "@polkadot/util": ^13.5.8
+    "@polkadot/networks": ^12.3.1
+    "@polkadot/util": ^12.3.1
     eventemitter3: ^5.0.1
     store: ^2.0.12
-    tslib: ^2.8.1
+    tslib: ^2.5.3
   peerDependencies:
     "@polkadot/networks": "*"
     "@polkadot/util": "*"
-  checksum: 03ccf3c2b9680060d88f12010f37f07c7e318e62d8579b41899110685a20dbec9ab10b364f3c4db1328ba3bb7f9aa6e62ea76acdc9298d8d631690119055d7ec
+  checksum: ddd2951ec42597dc97eec6f61368c703ac9ca48c81629c61b025bd4e0867789d8c493f40f91a63dda89a2031557e325a92d8da044aba0d84f7bb11df93e84d45
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:12.6.2, @polkadot/util-crypto@npm:^12.1.2, @polkadot/util-crypto@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/util-crypto@npm:12.6.2"
+"@polkadot/util-crypto@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-util-crypto-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/util-crypto@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-util-crypto-12.3.2.tgz"
   dependencies:
-    "@noble/curves": ^1.3.0
-    "@noble/hashes": ^1.3.3
-    "@polkadot/networks": 12.6.2
-    "@polkadot/util": 12.6.2
-    "@polkadot/wasm-crypto": ^7.3.2
-    "@polkadot/wasm-util": ^7.3.2
-    "@polkadot/x-bigint": 12.6.2
-    "@polkadot/x-randomvalues": 12.6.2
-    "@scure/base": ^1.1.5
-    tslib: ^2.6.2
+    "@noble/curves": 1.1.0
+    "@noble/hashes": 1.3.1
+    "@polkadot/networks": 12.3.2
+    "@polkadot/util": 12.3.2
+    "@polkadot/wasm-crypto": ^7.2.1
+    "@polkadot/wasm-util": ^7.2.1
+    "@polkadot/x-bigint": 12.3.2
+    "@polkadot/x-randomvalues": 12.3.2
+    "@scure/base": 1.1.1
+    tslib: ^2.5.3
   peerDependencies:
-    "@polkadot/util": 12.6.2
-  checksum: 63d4bd9bdc3a7089a0a68555cd6a510b8da3cfab142a8f96ba4b43d5d1db2a543433079bc88c2daf15a329d19ba2cc60f6cca6dbebaefd25e96169cb6343794b
+    "@polkadot/util": 12.3.2
+  checksum: 018afccf060c971ba966d6a5ea255fc842a9d97e7ae18f83c9397388bbd955882ca89bed6b07cfeeeac420f3dfffbfccd286e122ea492f78c6411647593d620f
   languageName: node
   linkType: hard
 
-"@polkadot/util-crypto@npm:13.5.8, @polkadot/util-crypto@npm:^13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/util-crypto@npm:13.5.8"
+"@polkadot/util@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-util-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/util@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-util-12.3.2.tgz"
   dependencies:
-    "@noble/curves": ^1.3.0
-    "@noble/hashes": ^1.3.3
-    "@polkadot/networks": 13.5.8
-    "@polkadot/util": 13.5.8
-    "@polkadot/wasm-crypto": ^7.5.2
-    "@polkadot/wasm-util": ^7.5.2
-    "@polkadot/x-bigint": 13.5.8
-    "@polkadot/x-randomvalues": 13.5.8
-    "@scure/base": ^1.1.7
-    tslib: ^2.8.0
-  peerDependencies:
-    "@polkadot/util": 13.5.8
-  checksum: 84392953e739b79a8ee678fc2f478926ab5de5f6c58e9c1b5610cecab9ffd399bf6a997792224075ccc1e44a61dc20731f3e7ec087932a86d97711cce2bdb1b3
-  languageName: node
-  linkType: hard
-
-"@polkadot/util@npm:12.6.2, @polkadot/util@npm:^12.1.2, @polkadot/util@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/util@npm:12.6.2"
-  dependencies:
-    "@polkadot/x-bigint": 12.6.2
-    "@polkadot/x-global": 12.6.2
-    "@polkadot/x-textdecoder": 12.6.2
-    "@polkadot/x-textencoder": 12.6.2
-    "@types/bn.js": ^5.1.5
+    "@polkadot/x-bigint": 12.3.2
+    "@polkadot/x-global": 12.3.2
+    "@polkadot/x-textdecoder": 12.3.2
+    "@polkadot/x-textencoder": 12.3.2
+    "@types/bn.js": ^5.1.1
     bn.js: ^5.2.1
-    tslib: ^2.6.2
-  checksum: a42a226f3c299026458d82e48516abf59c1cd8638167edaa3fc1a17aec0ebab203e0ad68a096a4a4fa188afd55093535a98e5083d682a79242a3c5ad79342599
+    tslib: ^2.5.3
+  checksum: 53b5ac58bbae5d3aa867e0f1483fc0fd40e811919e573051225ab32e031ab81649be0f969ecb7c7a094c588f381d8ec1fa67160a65e3e2ef2180afe5677136cc
   languageName: node
   linkType: hard
 
-"@polkadot/util@npm:13.5.8, @polkadot/util@npm:^13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/util@npm:13.5.8"
+"@polkadot/wasm-bridge@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-bridge-7.2.1.tgz":
+  version: 7.2.1
+  resolution: "@polkadot/wasm-bridge@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-bridge-7.2.1.tgz"
   dependencies:
-    "@polkadot/x-bigint": 13.5.8
-    "@polkadot/x-global": 13.5.8
-    "@polkadot/x-textdecoder": 13.5.8
-    "@polkadot/x-textencoder": 13.5.8
-    "@types/bn.js": ^5.1.6
-    bn.js: ^5.2.1
-    tslib: ^2.8.0
-  checksum: b44be26fafa4f71cdb1c4f0f4a4d59d83f2cacfa8928bf51fb41dd85ef509bbda439c7f83d2089c590496e4a72396899c739f11d2d0f332c02d0b30ac153ca5d
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-bridge@npm:7.5.3":
-  version: 7.5.3
-  resolution: "@polkadot/wasm-bridge@npm:7.5.3"
-  dependencies:
-    "@polkadot/wasm-util": 7.5.3
-    tslib: ^2.7.0
+    "@polkadot/wasm-util": 7.2.1
+    tslib: ^2.5.0
   peerDependencies:
     "@polkadot/util": "*"
     "@polkadot/x-randomvalues": "*"
-  checksum: a07e7a31729d17b783b396701df71459963e742776784ddf1cc2df1666105ab30566636fc2455ff6d86650a117293169739edbfb7c9ea0e8a3fe339212d77a9e
+  checksum: 6f4d255665f6c1552df9abcf8e99ee36b220c446c74e4da7ac21f3c578c3736695db41e816ef83226d98231c535df8daea6d2266c3090bdd8e7609fa87447de9
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-asmjs@npm:7.5.3":
-  version: 7.5.3
-  resolution: "@polkadot/wasm-crypto-asmjs@npm:7.5.3"
+"@polkadot/wasm-crypto-asmjs@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-asmjs-7.2.1.tgz":
+  version: 7.2.1
+  resolution: "@polkadot/wasm-crypto-asmjs@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-asmjs-7.2.1.tgz"
   dependencies:
-    tslib: ^2.7.0
+    tslib: ^2.5.0
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: e21d631a65e560a45a67fd0006d95ccbfece9a20bd6202c637d2d97a9bb166672ef8866d58f10fc13908abd9433c45148e1a383e7a253da1ded3cbaf03a4ce27
+  checksum: 54fc6bd55dc3dc10e868b8ad2298168f6f3d25d185c7c6ab86181bc196654dbe74e9ee28eb572def142f95416e303ce066f91cbd32212177f7f3be80e9f83a24
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-init@npm:7.5.3":
-  version: 7.5.3
-  resolution: "@polkadot/wasm-crypto-init@npm:7.5.3"
+"@polkadot/wasm-crypto-init@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-init-7.2.1.tgz":
+  version: 7.2.1
+  resolution: "@polkadot/wasm-crypto-init@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-init-7.2.1.tgz"
   dependencies:
-    "@polkadot/wasm-bridge": 7.5.3
-    "@polkadot/wasm-crypto-asmjs": 7.5.3
-    "@polkadot/wasm-crypto-wasm": 7.5.3
-    "@polkadot/wasm-util": 7.5.3
-    tslib: ^2.7.0
-  peerDependencies:
-    "@polkadot/util": "*"
-    "@polkadot/x-randomvalues": "*"
-  checksum: 6319325fd6189390b778f3151870e3e711d783cb4c2f3635538c3b114904564cd2f130b2a0f2aeae45be4486854f2723eb3faab8f790ff3370b0c067e6953033
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-crypto-wasm@npm:7.5.3":
-  version: 7.5.3
-  resolution: "@polkadot/wasm-crypto-wasm@npm:7.5.3"
-  dependencies:
-    "@polkadot/wasm-util": 7.5.3
-    tslib: ^2.7.0
-  peerDependencies:
-    "@polkadot/util": "*"
-  checksum: e2c28124b9a2c8e977d6739184f2f17337d3309e87fb6edb58aed04ca827798f9b3640abe16b25a105a8cc3270bb4bd9437d51cddbd56345063a99aa9e2313dc
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-crypto@npm:^7.3.2, @polkadot/wasm-crypto@npm:^7.5.2":
-  version: 7.5.3
-  resolution: "@polkadot/wasm-crypto@npm:7.5.3"
-  dependencies:
-    "@polkadot/wasm-bridge": 7.5.3
-    "@polkadot/wasm-crypto-asmjs": 7.5.3
-    "@polkadot/wasm-crypto-init": 7.5.3
-    "@polkadot/wasm-crypto-wasm": 7.5.3
-    "@polkadot/wasm-util": 7.5.3
-    tslib: ^2.7.0
+    "@polkadot/wasm-bridge": 7.2.1
+    "@polkadot/wasm-crypto-asmjs": 7.2.1
+    "@polkadot/wasm-crypto-wasm": 7.2.1
+    "@polkadot/wasm-util": 7.2.1
+    tslib: ^2.5.0
   peerDependencies:
     "@polkadot/util": "*"
     "@polkadot/x-randomvalues": "*"
-  checksum: 63a5967e8d3d4d3029cd0de93f79280432fa8286a1da9ea38274ddd8f561bf7f671cafdd5008f2970377e5c84e94be99b4f78cbb9783983c90ae8e83212ca254
+  checksum: 61e5d14c790375368de66fbad68f68f9c9dd54df8bf1333038ccedcc51813cc1ccda171ec33f293bf8673e5a5e840d96206bbf73e3d76ad959ba0228027b4e70
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-util@npm:7.5.3, @polkadot/wasm-util@npm:^7.3.2, @polkadot/wasm-util@npm:^7.5.2":
-  version: 7.5.3
-  resolution: "@polkadot/wasm-util@npm:7.5.3"
+"@polkadot/wasm-crypto-wasm@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-wasm-7.2.1.tgz":
+  version: 7.2.1
+  resolution: "@polkadot/wasm-crypto-wasm@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-wasm-7.2.1.tgz"
   dependencies:
-    tslib: ^2.7.0
+    "@polkadot/wasm-util": 7.2.1
+    tslib: ^2.5.0
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: 81a81f179d57a7995d6a4c153f4e168bbb033c8ef293233bfe48c12b46550558a1f1932e0757812a8aba210a8549a1fa68b86390f8e89b8f0908f9ec2504d5b8
+  checksum: 3f73c2bd7ec124e2b957de364497c8476526dba5b52620087c9774ec2e4036f10d1ee0f6fa394bd63bd13d572d4ad8072e77426df67cdc422027e62a73a0f774
   languageName: node
   linkType: hard
 
-"@polkadot/x-bigint@npm:12.6.2, @polkadot/x-bigint@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-bigint@npm:12.6.2"
+"@polkadot/wasm-crypto@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-7.2.1.tgz":
+  version: 7.2.1
+  resolution: "@polkadot/wasm-crypto@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-crypto-7.2.1.tgz"
   dependencies:
-    "@polkadot/x-global": 12.6.2
-    tslib: ^2.6.2
-  checksum: 12b2d5c3a7b994f5bd4f7aeda9e268384b04bd080892400c65b88fb5aa4951df6c4abe3baf9820f3adf3da92e2add710858dd35dcd597d2527bbfd1cd0efe534
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-bigint@npm:13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/x-bigint@npm:13.5.8"
-  dependencies:
-    "@polkadot/x-global": 13.5.8
-    tslib: ^2.8.0
-  checksum: baf801b255fb931ffbd76a6ef2a438892e91b2f7330d3da6ad24a832216fe042f7a105b6049d23381a53222e8658661d07ce39a44de051023651c0a170d902f2
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-fetch@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-fetch@npm:12.6.2"
-  dependencies:
-    "@polkadot/x-global": 12.6.2
-    node-fetch: ^3.3.2
-    tslib: ^2.6.2
-  checksum: 2f0269b17ebbb907f4f4fa777898fd8ea16ecd37abfc2c0b69cfc49bd5ab0ed38cf836a4941e85f9100192f7005731a9a8c6b135799efd17b4261c3cc1ebf844
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-global@npm:12.6.2, @polkadot/x-global@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-global@npm:12.6.2"
-  dependencies:
-    tslib: ^2.6.2
-  checksum: eb17e039cb1668743c84f5eafbf518cf6248e93090e4877f81f338b418b3e6b0173f2414c62bd9cbe7bf8911ec566527ca7c49c4354ba90d57e62e90195329d0
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-global@npm:13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/x-global@npm:13.5.8"
-  dependencies:
-    tslib: ^2.8.0
-  checksum: 5c85cc2b222aab8170556d4128881d19c11d5f5372012ea9ef8ebdb7894623e405982a60806de0de655c68b8a4c39e0c334922df6c4cc23cf9253a6a6a846a86
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-randomvalues@npm:12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-randomvalues@npm:12.6.2"
-  dependencies:
-    "@polkadot/x-global": 12.6.2
-    tslib: ^2.6.2
+    "@polkadot/wasm-bridge": 7.2.1
+    "@polkadot/wasm-crypto-asmjs": 7.2.1
+    "@polkadot/wasm-crypto-init": 7.2.1
+    "@polkadot/wasm-crypto-wasm": 7.2.1
+    "@polkadot/wasm-util": 7.2.1
+    tslib: ^2.5.0
   peerDependencies:
-    "@polkadot/util": 12.6.2
+    "@polkadot/util": "*"
+    "@polkadot/x-randomvalues": "*"
+  checksum: 729032ae32fa0a118e47ca74ddec6f21a05f002d44ecf70ba187919e3c1956ec68c823db435e4f76e83403a64a4709985249aad7ceee2536b959ff53553a5c28
+  languageName: node
+  linkType: hard
+
+"@polkadot/wasm-util@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-util-7.2.1.tgz":
+  version: 7.2.1
+  resolution: "@polkadot/wasm-util@https://github.com/Quantum-Blockchains/wasm/releases/download/v7.2.1/polkadot-wasm-util-7.2.1.tgz"
+  dependencies:
+    tslib: ^2.5.0
+  peerDependencies:
+    "@polkadot/util": "*"
+  checksum: 8df30296664807c27b01d37a3e9f124fdc22aef61e633b1a538a7c533f485a2aa756c43e67aac8d0c8383273432783b78e5528c5bc1ffcf508e7faaa5009e618
+  languageName: node
+  linkType: hard
+
+"@polkadot/x-bigint@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-bigint-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-bigint@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-bigint-12.3.2.tgz"
+  dependencies:
+    "@polkadot/x-global": 12.3.2
+    tslib: ^2.5.3
+  checksum: 0c88e28f1072cd2e5bc0efa3b8ede13f1084c8d56bb78a91f031ee128e572a5f74faa99c22be64182950194647a2081899dcfaa7e7ab16bbb3f9b9761515eb85
+  languageName: node
+  linkType: hard
+
+"@polkadot/x-fetch@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-fetch-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-fetch@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-fetch-12.3.2.tgz"
+  dependencies:
+    "@polkadot/x-global": 12.3.2
+    node-fetch: ^3.3.1
+    tslib: ^2.5.3
+  checksum: 063bae74b5c197c5b2c603cc761aa830fe96a196d8cc0d9bc428670d1d0fa44d053d96b463783a9d989ec1032bda6397cb4f8772e65fed9d5f1089d04d7b54dc
+  languageName: node
+  linkType: hard
+
+"@polkadot/x-global@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-global-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-global@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-global-12.3.2.tgz"
+  dependencies:
+    tslib: ^2.5.3
+  checksum: 85bd4a3e89bacdf8159fe505b875fad0ce8cfc5ba65377b14981166d973339a2fa3128582112af51dfecea4b68b0501a960056138110195b5bea69c3a8c88e11
+  languageName: node
+  linkType: hard
+
+"@polkadot/x-randomvalues@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-randomvalues-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-randomvalues@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-randomvalues-12.3.2.tgz"
+  dependencies:
+    "@polkadot/x-global": 12.3.2
+    tslib: ^2.5.3
+  peerDependencies:
+    "@polkadot/util": 12.3.2
     "@polkadot/wasm-util": "*"
-  checksum: 7faccf2dbcf0c7383b5ecfd7beb098c8c8ad5cf4c8f5bafd601657f8271af8f00b66741531ecf8b2f7c59911d96f77e358184a7c5034c70bf387a8e929a4c210
+  checksum: 809e0429a0e6f285ad0e2bf0b7dbe1f8b05cc3aacb9f7d8593fd0702e2f23ef7e3aab861d1493528670712c03426b36aacecf43b6fc97cc4036ee1ae41fa04dc
   languageName: node
   linkType: hard
 
-"@polkadot/x-randomvalues@npm:13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/x-randomvalues@npm:13.5.8"
+"@polkadot/x-textdecoder@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-textdecoder-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-textdecoder@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-textdecoder-12.3.2.tgz"
   dependencies:
-    "@polkadot/x-global": 13.5.8
-    tslib: ^2.8.0
-  peerDependencies:
-    "@polkadot/util": 13.5.8
-    "@polkadot/wasm-util": "*"
-  checksum: 7b49774659058b90a59a80a9839749a72073218790c919a95dada646b8742b8bdbf2eee1d39eb2ebf4d5d485af787b63893f6aa8211f24ff43c596017711c271
+    "@polkadot/x-global": 12.3.2
+    tslib: ^2.5.3
+  checksum: d5b8810b325bad317e10f631f0d7c9c91e0db92ca37db7935e41569df8c926534aa4668a14b9b12d1d5263569239665bca8ad0089bf3b789a09dbf6f0303108f
   languageName: node
   linkType: hard
 
-"@polkadot/x-textdecoder@npm:12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-textdecoder@npm:12.6.2"
+"@polkadot/x-textencoder@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-textencoder-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-textencoder@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-textencoder-12.3.2.tgz"
   dependencies:
-    "@polkadot/x-global": 12.6.2
-    tslib: ^2.6.2
-  checksum: c7e4b7f7ff943095a96bef3e3e56216d33d6ff38c965931356a06d01594b2c523ccbeada697a31b5457b134e578618f35425e0883f45187adffa98df99a45f27
+    "@polkadot/x-global": 12.3.2
+    tslib: ^2.5.3
+  checksum: c383fab93904f6c47f87b1b111a002542c701844c82a62ead6bbbd19f23b58f87ebd47ec8578de7ed18b45668b43491cc60e44c343b9d59e80696e5c9357e962
   languageName: node
   linkType: hard
 
-"@polkadot/x-textdecoder@npm:13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/x-textdecoder@npm:13.5.8"
+"@polkadot/x-ws@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-ws-12.3.2.tgz":
+  version: 12.3.2
+  resolution: "@polkadot/x-ws@https://github.com/Quantum-Blockchains/common/releases/download/v12.3.2/polkadot-x-ws-12.3.2.tgz"
   dependencies:
-    "@polkadot/x-global": 13.5.8
-    tslib: ^2.8.0
-  checksum: 13558afcb7c35e8661f53cd91a8b749ddb9e51b06ca2c79886a310816e37fa88d7106df11202a48259a514b14c3e901e1e47a345be4b8f276c5cc9d7e7be9140
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-textencoder@npm:12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-textencoder@npm:12.6.2"
-  dependencies:
-    "@polkadot/x-global": 12.6.2
-    tslib: ^2.6.2
-  checksum: d3eacdc0eb2e1ef8b8132d52a1f1033be62bc64360753a117f2e6517ccf7c9cde628558bbd016a73836eacd91cb1e2ac382dce0ce9c8d32c2f7db3fcc8863911
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-textencoder@npm:13.5.8":
-  version: 13.5.8
-  resolution: "@polkadot/x-textencoder@npm:13.5.8"
-  dependencies:
-    "@polkadot/x-global": 13.5.8
-    tslib: ^2.8.0
-  checksum: a09a83c5072a26ec07bc6910e6b6a52cf23e5c5e8468f39a55bad98450fe606ed97a9a09b6ab475c97983b33b0ad61a074109e5d1fd46dffa66e8ccff9f9cb91
-  languageName: node
-  linkType: hard
-
-"@polkadot/x-ws@npm:^12.6.2":
-  version: 12.6.2
-  resolution: "@polkadot/x-ws@npm:12.6.2"
-  dependencies:
-    "@polkadot/x-global": 12.6.2
-    tslib: ^2.6.2
-    ws: ^8.15.1
-  checksum: a6bddc7ac81690f222fbc192f87f2d9b951d67414ea31a0377fb20844db8fde05d7771df5291633417aa4616bf968a31005ff22d416b2d4fecda2109f820abf7
+    "@polkadot/x-global": 12.3.2
+    tslib: ^2.5.3
+    ws: ^8.13.0
+  checksum: 7bb18ada56bb7d441c1392ec459959ff7cfc27fd57953898cb19682ea2fd323b68946102e4fe1c5eb1eb89fa62eb2d8ea7be03382ef9a473cd8c74d039b875d1
   languageName: node
   linkType: hard
 
@@ -3103,10 +2927,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/base@npm:^1.1.1, @scure/base@npm:^1.1.5, @scure/base@npm:^1.1.7":
-  version: 1.2.6
-  resolution: "@scure/base@npm:1.2.6"
-  checksum: 1058cb26d5e4c1c46c9cc0ae0b67cc66d306733baf35d6ebdd8ddaba242b80c3807b726e3b48cb0411bb95ec10d37764969063ea62188f86ae9315df8ea6b325
+"@scure/base@npm:1.1.1":
+  version: 1.1.1
+  resolution: "@scure/base@npm:1.1.1"
+  checksum: b4fc810b492693e7e8d0107313ac74c3646970c198bbe26d7332820886fa4f09441991023ec9aa3a2a51246b74409ab5ebae2e8ef148bbc253da79ac49130309
   languageName: node
   linkType: hard
 
@@ -3148,50 +2972,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@substrate/connect-extension-protocol@npm:^2.0.0":
-  version: 2.2.2
-  resolution: "@substrate/connect-extension-protocol@npm:2.2.2"
-  checksum: 6baca8b28eb515bf6508517183ce911a61c598aa676a670631da3da52fb83aeab7cad952ce85696a21dc0aa54adc08f211ea0365b06a0486a95c6a895f80a635
+"@substrate/connect-extension-protocol@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@substrate/connect-extension-protocol@npm:1.0.1"
+  checksum: 116dee587e81e832e14c25038bd849438c9493c6089aa6c1bf1760780d463880d44d362ed983d57ac3695368ac46f3c9df3dbaed92f36de89626c9735cecd1e4
   languageName: node
   linkType: hard
 
-"@substrate/connect-known-chains@npm:^1.1.1":
-  version: 1.10.3
-  resolution: "@substrate/connect-known-chains@npm:1.10.3"
-  checksum: 828e085de325aef792a99b7d1eac85b67431148254b468868406612bc0f6a4c04bebd9bb7c578a9b1405cdf6970d069e6a39bc4e8514c268c961be21a0be89c5
-  languageName: node
-  linkType: hard
-
-"@substrate/connect@npm:0.8.8":
-  version: 0.8.8
-  resolution: "@substrate/connect@npm:0.8.8"
+"@substrate/connect@npm:0.7.26":
+  version: 0.7.26
+  resolution: "@substrate/connect@npm:0.7.26"
   dependencies:
-    "@substrate/connect-extension-protocol": ^2.0.0
-    "@substrate/connect-known-chains": ^1.1.1
-    "@substrate/light-client-extension-helpers": ^0.0.4
-    smoldot: 2.0.22
-  checksum: c70e8be2a121278af6adbace1060d8f1063c898cbc43b34ce454154cca23cd056e2e8d84407fe49e1c347ff221de9b8e74fbaa18f8145a7e65fb20cd06000368
+    "@substrate/connect-extension-protocol": ^1.0.1
+    eventemitter3: ^4.0.7
+    smoldot: 1.0.4
+  checksum: 3179d241f073318d5973deb61c9c8d9b89ae28909a594b6b9fbcdfffd030a70ba58e8428eaa9d72484810bad10c93de1ad9c440b878d0fcfaaf4559d2e6f4502
   languageName: node
   linkType: hard
 
-"@substrate/light-client-extension-helpers@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "@substrate/light-client-extension-helpers@npm:0.0.4"
-  dependencies:
-    "@polkadot-api/client": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/json-rpc-provider": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/json-rpc-provider-proxy": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@polkadot-api/substrate-client": 0.0.1-492c132563ea6b40ae1fc5470dec4cd18768d182.1.0
-    "@substrate/connect-extension-protocol": ^2.0.0
-    "@substrate/connect-known-chains": ^1.1.1
-    rxjs: ^7.8.1
-  peerDependencies:
-    smoldot: 2.x
-  checksum: 7ec22cbc13d6acd29e40d716f717942be6cfa0af896fccb6ad797b37908d21a6a56398d8ece6b1b79b956c61dc50978594fbc1e660cbfeb127cd60d58203e043
-  languageName: node
-  linkType: hard
-
-"@substrate/ss58-registry@npm:^1.44.0, @substrate/ss58-registry@npm:^1.51.0":
+"@substrate/ss58-registry@npm:^1.40.0":
   version: 1.51.0
   resolution: "@substrate/ss58-registry@npm:1.51.0"
   checksum: bfcba035e14648801f74802c76b195c22a86875cca89a577e21f5edd3e800578486f964a5117bad4b272f21695f8557fe713c3031c0c81269b76259470eb5a74
@@ -3396,7 +3195,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bn.js@npm:^5.1.5, @types/bn.js@npm:^5.1.6":
+"@types/bn.js@npm:^5.1.1":
   version: 5.2.0
   resolution: "@types/bn.js@npm:5.2.0"
   dependencies:
@@ -7379,7 +7178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter3@npm:^4.0.0":
+"eventemitter3@npm:^4.0.0, eventemitter3@npm:^4.0.7":
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
   checksum: 1875311c42fcfe9c707b2712c32664a245629b42bb0a5a84439762dd0fd637fc54d078155ea83c2af9e0323c9ac13687e03cfba79b03af9f40c89b4960099374
@@ -10611,7 +10410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mock-socket@npm:^9.3.1":
+"mock-socket@npm:^9.2.1":
   version: 9.3.1
   resolution: "mock-socket@npm:9.3.1"
   checksum: cb2dde4fc5dde280dd5ccb78eaaa223382ee16437f46b86558017655584ad08c22e733bde2dd5cc86927def506b6caeb0147e3167b9a62d70d5cf19d44103853
@@ -10716,7 +10515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:^13.5.0":
+"nock@npm:^13.3.1":
   version: 13.5.6
   resolution: "nock@npm:13.5.6"
   dependencies:
@@ -10734,7 +10533,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.3.2":
+"node-fetch@npm:^3.3.1":
   version: 3.3.2
   resolution: "node-fetch@npm:3.3.2"
   dependencies:
@@ -11164,6 +10963,13 @@ __metadata:
   version: 2.2.0
   resolution: "p-try@npm:2.2.0"
   checksum: f8a8e9a7693659383f06aec604ad5ead237c7a261c18048a6e1b5b85a5f8a067e469aa24f5bc009b991ea3b058a87f5065ef4176793a200d4917349881216cae
+  languageName: node
+  linkType: hard
+
+"pako@npm:^2.0.4":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
   languageName: node
   linkType: hard
 
@@ -13311,13 +13117,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scale-ts@npm:^1.6.0":
-  version: 1.6.1
-  resolution: "scale-ts@npm:1.6.1"
-  checksum: 0e045e45184194eab4770d823a2d455646eae7fc827f0f6162ca409f4f3387415a152e885f1594ba327da5b62ebc355c16049c5573c9a298038bd5d741a92175
-  languageName: node
-  linkType: hard
-
 "scheduler@npm:^0.20.2":
   version: 0.20.2
   resolution: "scheduler@npm:0.20.2"
@@ -13730,12 +13529,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"smoldot@npm:2.0.22":
-  version: 2.0.22
-  resolution: "smoldot@npm:2.0.22"
+"smoldot@npm:1.0.4":
+  version: 1.0.4
+  resolution: "smoldot@npm:1.0.4"
   dependencies:
+    pako: ^2.0.4
     ws: ^8.8.1
-  checksum: 383bc6a5481190d64302fad56e9e4120a484885aee5543b268887de425708f04e8b3b3b69893333dfd9fd0e596f006afaa7c7ee5ff260c5d2be929c60302d385
+  checksum: 81ecc38b98f7ac4dd093753e85956262608dca3c8a288c20a25fe1762a6afcdbe6f3622ea30a346df3f4145e0900ef0595e56e96e9e0de83c59f0649d1ab4786
   languageName: node
   linkType: hard
 
@@ -14640,7 +14440,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.6.2, tslib@npm:^2.7.0, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
+"tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.5.0, tslib@npm:^2.5.3, tslib@npm:^2.6.2":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
@@ -15682,7 +15482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.13.0, ws@npm:^8.15.1, ws@npm:^8.8.1":
+"ws@npm:^8.13.0, ws@npm:^8.8.1":
   version: 8.18.3
   resolution: "ws@npm:8.18.3"
   peerDependencies:
