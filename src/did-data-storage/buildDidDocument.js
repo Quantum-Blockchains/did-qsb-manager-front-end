@@ -11,6 +11,16 @@ const bytesToString = value => {
   }
 }
 
+const bytesToJson = value => {
+  const text = bytesToString(value)
+  if (!text) return null
+  try {
+    return JSON.parse(text)
+  } catch (error) {
+    return text
+  }
+}
+
 export default function buildDidDocument(didValue, chainData) {
   if (!didValue || !chainData) return null
 
@@ -43,9 +53,36 @@ export default function buildDidDocument(didValue, chainData) {
     return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
   }
 
-  const toPublicKeyMultibase = key => {
-    const raw = Uint8Array.from(key?.public_key || [])
-    const codec = key?.multicodec
+  const normalizeKeyMaterial = key => {
+    const keyMaterial = key?.key_material || key?.keyMaterial || null
+    const multikey = keyMaterial?.Multikey || keyMaterial?.multikey || null
+    const jwk = keyMaterial?.Jwk || keyMaterial?.jwk || null
+
+    if (multikey) {
+      return {
+        type: 'Multikey',
+        publicKey: multikey.public_key || multikey.publicKey || [],
+        multicodec: multikey.multicodec,
+      }
+    }
+
+    if (jwk) {
+      return {
+        type: 'Jwk',
+        publicKeyJwk: jwk.public_key_jwk || jwk.publicKeyJwk || jwk,
+      }
+    }
+
+    return {
+      type: 'Multikey',
+      publicKey: key?.public_key || key?.publicKey || [],
+      multicodec: key?.multicodec,
+    }
+  }
+
+  const toPublicKeyMultibase = material => {
+    const raw = Uint8Array.from(material?.publicKey || [])
+    const codec = material?.multicodec
     if (!Number.isInteger(codec) || raw.length === 0) {
       return null
     }
@@ -57,14 +94,24 @@ export default function buildDidDocument(didValue, chainData) {
   }
 
   const verificationMethod = activeKeys.map(key => {
+    const material = normalizeKeyMaterial(key)
     const keyId = bytesToString(key.key_id)
     const controller = bytesToString(key.controller) || didValue
+
+    if (material.type === 'Jwk') {
+      return {
+        id: keyId || `${didValue}#update`,
+        type: 'JsonWebKey2020',
+        controller,
+        publicKeyJwk: bytesToJson(material.publicKeyJwk),
+      }
+    }
 
     return {
       id: keyId || `${didValue}#update`,
       type: 'Multikey',
       controller,
-      publicKeyMultibase: toPublicKeyMultibase(key),
+      publicKeyMultibase: toPublicKeyMultibase(material),
     }
   })
 
@@ -112,6 +159,7 @@ export default function buildDidDocument(didValue, chainData) {
       '@context': [
         'https://www.w3.org/ns/did/v1',
         'https://w3id.org/security/multikey/v1',
+        'https://w3id.org/security/suites/jws-2020/v1',
       ],
       id: didValue,
       verificationMethod,
