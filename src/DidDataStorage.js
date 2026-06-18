@@ -154,25 +154,25 @@ export default function DidDataStorage() {
     }
   }, [addToast, didUpdateLoadError])
 
-  const isWalletDisconnectError = error => {
+  const isWalletDisconnectError = useCallback(error => {
     const message = error instanceof Error ? error.message : String(error || '')
     return /disconnected port|extension context invalidated|receiving end does not exist|message channel closed/i.test(message)
-  }
+  }, [])
 
-  const markWalletConnected = () => {
+  const markWalletConnected = useCallback(() => {
     setWalletStatus('connected')
     setWalletError('')
-  }
+  }, [])
 
-  const markWalletDisconnected = (reason, clearCachedDids = true) => {
+  const markWalletDisconnected = useCallback((reason, clearCachedDids = true) => {
     setWalletStatus('disconnected')
     setWalletError(reason || 'Wallet disconnected. Reconnect wallet and try again.')
     if (clearCachedDids) {
       setDidOptions([])
     }
-  }
+  }, [])
 
-  const enableWalletExtensions = async () => {
+  const enableWalletExtensions = useCallback(async () => {
     setWalletStatus('checking')
     try {
       const extensions = await web3Enable(config.APP_NAME)
@@ -186,7 +186,7 @@ export default function DidDataStorage() {
       markWalletDisconnected(`Wallet connection failed: ${message}`)
       throw error
     }
-  }
+  }, [markWalletConnected, markWalletDisconnected])
 
   const getDidsSigningExtension = async () => {
     const extensions = await enableWalletExtensions()
@@ -552,7 +552,7 @@ export default function DidDataStorage() {
     return [address, { signer: injector.signer }]
   }
 
-  const loadDidsFromExtension = async () => {
+  const loadDidsFromExtension = useCallback(async () => {
     setIsLoadingDids(true)
     setDidOptionsError('')
 
@@ -604,13 +604,18 @@ export default function DidDataStorage() {
     } finally {
       setIsLoadingDids(false)
     }
-  }
+  }, [
+    enableWalletExtensions,
+    isWalletDisconnectError,
+    markWalletConnected,
+    markWalletDisconnected,
+  ])
 
   useEffect(() => {
     if (activeFeature === 'DID update' || activeFeature === 'DID details') {
       loadDidsFromExtension()
     }
-  }, [activeFeature])
+  }, [activeFeature, loadDidsFromExtension])
 
   const loadDidUpdateDetails = useCallback(async () => {
     if (activeFeature !== 'DID update') {
